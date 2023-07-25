@@ -9,7 +9,7 @@ import SwiftUI
 
 struct MemoCreate: View {
     
-    @Binding var isDisplay_MemoCreate: Bool
+    @Binding var is_Display_MemoCreate: Bool
     @State var database: Database
     @FocusState var focus:Bool
     
@@ -25,13 +25,19 @@ struct MemoCreate: View {
                             .focused(self.$focus)
                         
                         Button(action: {
-                            isDisplay_MemoCreate = false
+                            is_Display_MemoCreate = false
                             database.createMemo(
                                 memo: Memo(Date(), text, [], false)
                             )
                             text = ""
                         }) {
                             Text("登録")
+                                .foregroundColor(.white)
+                                .padding(10)
+                                .frame(maxWidth: .infinity)
+                                .bold()
+                                .background(Color.BaseColor)
+                                .cornerRadius(12)
                             
                         }
                     }
@@ -43,7 +49,7 @@ struct MemoCreate: View {
                             Button {
                                 withAnimation {
                                     focus = false
-                                    isDisplay_MemoCreate = false
+                                    is_Display_MemoCreate = false
                                 }
                             } label: {
                                 Image(systemName: "xmark")

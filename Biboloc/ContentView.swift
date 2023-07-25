@@ -9,11 +9,9 @@ import SwiftUI
 
 struct ContentView: View {
     @ObservedObject var database: Database
-    @State private var isDisplay_MemoCreate = false
-    @State private var isDisplay_MemoUpdate = false
-    
-    @State private var memo_selected = Memo(Date(), "", [], false)
-    @State private var displayed: String = ""
+    @State private var is_Display_MemoCreate = false
+    @State private var is_Display_MemoUpdate = false
+    @State private var selected_memo = Memo(Date(), "", [], false)
     var body: some View {
         ZStack {
             // 背景
@@ -26,7 +24,7 @@ struct ContentView: View {
                 VStack {
                     Spacer()
                     
-                    Image("logo")
+                    Image("logo_water")
                         .resizable()
                         .scaledToFit()
                         .frame(width: 100, height: 50)
@@ -40,46 +38,73 @@ struct ContentView: View {
                     ForEach(0..<database.MemoList.count, id: \.self) {
                         num in
                         
-                        if !is_same_month(MemoList: database.MemoList, num: num) {
-                            Text("\(convert_year_month(memo: database.MemoList[num]))")
+                        if !is_SameMonth(MemoList: database.MemoList, num: num) {
+                            Text("\(ConvertYearMonth(memo: database.MemoList[num]))")
                         }
                         
-                        // テキスト
-                        ZStack {
-                            Rectangle()
-                                .fill(Color.BaseColor.opacity(0.2))
+                        switch StatusDate_Prev_and_Next(MemoList: database.MemoList, num: num) {
+                        case AppConstants.CALENDAR_NOT_SAME_DATE_PREV_AND_NEXT:
+                            // テキスト
+                                MemoDateView(
+                                    memo: $database.MemoList[num],
+                                    is_Display_MemoUpdate: $is_Display_MemoUpdate,
+                                    selected_memo: $selected_memo
+                                )
+                                .frame(width: UIScreen.main.bounds.size.width * 0.9, height: AppConstants.MEMO_HEIGHT)
+                                .cornerRadius(10)
+                                .padding(.top, 4)
+                                .padding(.bottom, 4)
                             
-                            HStack {
-                                VStack {
-                                    if !is_same_date(MemoList: database.MemoList, num: num) {
-                                        Text("\(convert_day(memo: database.MemoList[num]))")
-                                            .font(.largeTitle)
-                                        
-                                        Text("\(convert_WeekDay(memo: database.MemoList[num]))")
-                                            .font(.footnote)
-                                    }
-                                }
-                                .frame(width: 45, height: 50)
-                                .padding()
-                                
-                                Text("\(database.MemoList[num].text)")
-                                Spacer()
-                            }
-                            Button(action: {
-                                isDisplay_MemoUpdate = true
-                                memo_selected = database.MemoList[num]
-                            }) {
-                                Rectangle()
-                                    .fill(.clear)
-                            }
+                        case AppConstants.CALENDAR_SAME_DATE_NEXT_ONLY:
+                                // テキスト
+                                MemoDateView(
+                                    memo: $database.MemoList[num],
+                                    is_Display_MemoUpdate: $is_Display_MemoUpdate,
+                                    selected_memo: $selected_memo
+                                )
+                            .frame(width: UIScreen.main.bounds.size.width * 0.9, height: AppConstants.MEMO_HEIGHT)
+                            .mask(PartlyRoundedCornerView(
+                                cornerRadius: 10,
+                                maskedCorners: [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+                            ))
+                            .padding(.bottom, -4)
+                            .padding(.top, 4)
+                            
+                        case AppConstants.CALENDAR_SAME_DATE_PREV_ONLY:
+                            // テキスト
+                            MemoView(
+                                memo: $database.MemoList[num],
+                                is_Display_MemoUpdate: $is_Display_MemoUpdate,
+                                selected_memo: $selected_memo
+                            )
+                            .frame(width: UIScreen.main.bounds.size.width * 0.9, height: AppConstants.MEMO_HEIGHT)
+                            .mask(PartlyRoundedCornerView(
+                                cornerRadius: 10,
+                                maskedCorners: [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+                            ))
+                            .padding(.top, -4)
+                            .padding(.bottom, 4)
+                            
+                        case AppConstants.CALENDAR_SAME_DATE_PREV_AND_NEXT:
+                            // テキスト
+                            MemoView(
+                                memo: $database.MemoList[num],
+                                is_Display_MemoUpdate: $is_Display_MemoUpdate,
+                                selected_memo: $selected_memo
+                            )
+                            .frame(width: UIScreen.main.bounds.size.width * 0.9, height: AppConstants.MEMO_HEIGHT)
+                            .padding(.top, -4)
+                            .padding(.bottom, -4)
+                            
+                        default:
+                            Text("error")
                         }
-                        .frame(width: UIScreen.main.bounds.size.width * 0.9, height: 120)
-                        .mask(PartlyRoundedCornerView(
-                            cornerRadius: 20,
-                            maskedCorners: [.layerMinXMinYCorner, .layerMaxXMinYCorner])
-                        )
                     }
+                    Rectangle()
+                        .fill(.clear)
+                        .frame(height: 110)
                 }
+                .frame(height: UIScreen.main.bounds.size.height - 100)
                 
                 Spacer()
                 
@@ -89,13 +114,13 @@ struct ContentView: View {
             Rectangle()
             // ポップアップ系画面の表示中は、背景をグレーにする
             //スタンプカード画面、スタンプ獲得画面
-                .fill((isDisplay_MemoCreate || isDisplay_MemoUpdate) ? .gray.opacity(0.7) : .clear)
+                .fill((is_Display_MemoCreate || is_Display_MemoUpdate) ? .gray.opacity(0.7) : .clear)
                 .edgesIgnoringSafeArea(.all)
             
             // タップすると、ポップアップが消える
                 .onTapGesture {
-                    isDisplay_MemoCreate = false
-                    isDisplay_MemoUpdate = false
+                    is_Display_MemoCreate = false
+                    is_Display_MemoUpdate = false
                 }
             
             
@@ -132,7 +157,7 @@ struct ContentView: View {
                         
                         VStack{
                             Button(action: {
-                                isDisplay_MemoCreate = true
+                                is_Display_MemoCreate = true
                             }) {
                                 Circle()
                                     .fill(.clear)
@@ -145,17 +170,17 @@ struct ContentView: View {
                 .frame(height: 130)
                 .edgesIgnoringSafeArea(.all)
             }
-            .popup(isPresented: $isDisplay_MemoCreate){
+            .popup(isPresented: $is_Display_MemoCreate){
                 MemoCreate(
-                    isDisplay_MemoCreate: $isDisplay_MemoCreate,
+                    is_Display_MemoCreate: $is_Display_MemoCreate,
                     database: database
                 )
             }
             
-            .popup(isPresented: $isDisplay_MemoUpdate){
+            .popup(isPresented: $is_Display_MemoUpdate){
                 MemoUpdate(
-                    isDisplay_MemoUpdate: $isDisplay_MemoUpdate,
-                    memo: $memo_selected,
+                    isDisplay_MemoUpdate: $is_Display_MemoUpdate,
+                    memo: $selected_memo,
                     database: database
                 )
             }
@@ -164,16 +189,8 @@ struct ContentView: View {
 }
 
 
-
-func convert_WeekDay(memo: Memo) -> String {
-    let calendar = Calendar(identifier: .gregorian)
-    let WeekDayNumber = calendar.component(.weekday, from: memo.created_at ?? Date())
-    
-    return calendar.weekdaySymbols[WeekDayNumber - 1]
-}
-
-
-func convert_year_month(memo: Memo) -> String {
+// Date型から年月に変換
+func ConvertYearMonth(memo: Memo) -> String {
     let calendar = Calendar(identifier: .gregorian)
     let year = calendar.component(.year, from: memo.created_at ?? Date())
     let month = calendar.component(.month, from: memo.created_at ?? Date())
@@ -181,44 +198,104 @@ func convert_year_month(memo: Memo) -> String {
     return "\(year) / \(month)"
 }
 
+// Date型から曜日に変換
+func ConvertWeekDay(memo: Memo) -> String {
+    let calendar = Calendar(identifier: .gregorian)
+    let WeekDayNumber = calendar.component(.weekday, from: memo.created_at ?? Date())
+    
+    return calendar.weekdaySymbols[WeekDayNumber - 1]
+}
 
-func convert_day(memo: Memo) -> Int {
+// Date型から日付に変換
+func ConvertDay(memo: Memo) -> Int {
     let calendar = Calendar(identifier: .gregorian)
     let day = calendar.component(.day, from: memo.created_at ?? Date())
     
     return day
 }
 
+// 前後の日付が同じか判定
+func StatusDate_Prev_and_Next(MemoList: [Memo], num: Int) -> Int {
+    var status_date: Int = 0
+    // 先頭の場合
+    // 後ろの日付のみ比較
+    if num == 0 {
+        if is_SameDate(MemoList: MemoList, num: num+1) {
+            status_date = AppConstants.CALENDAR_SAME_DATE_NEXT_ONLY
+        } else {
+            status_date = AppConstants.CALENDAR_NOT_SAME_DATE_PREV_AND_NEXT
+        }
+    }
+    
+    // 最後尾の場合
+    // 前の日付のみ比較
+    else if num == MemoList.count {
+        if is_SameDate(MemoList: MemoList, num: num) {
+            status_date = AppConstants.CALENDAR_SAME_DATE_PREV_ONLY
+        } else {
+            status_date = AppConstants.CALENDAR_NOT_SAME_DATE_PREV_AND_NEXT
+        }
+    }
+    
+    // それ以外
+    // 前後の日付を比較
+    else {
+        let is_sameDate_prev_now = is_SameDate(MemoList: MemoList, num: num)
+        let is_sameDate_now_next = is_SameDate(MemoList: MemoList, num: num+1)
+        
+        if is_sameDate_prev_now {
+            if is_sameDate_now_next {
+                status_date = AppConstants.CALENDAR_SAME_DATE_PREV_AND_NEXT
+            } else {
+                status_date = AppConstants.CALENDAR_SAME_DATE_PREV_ONLY
+            }
+        } else {
+            if is_sameDate_now_next {
+                status_date = AppConstants.CALENDAR_SAME_DATE_NEXT_ONLY
+            } else {
+                status_date = AppConstants.CALENDAR_NOT_SAME_DATE_PREV_AND_NEXT
+            }
+        }
+    }
+    return status_date
+}
 
-func is_same_date(MemoList: [Memo], num: Int) -> Bool {
+// 1つ前のメモの日付が同じか判定
+func is_SameDate(MemoList: [Memo], num: Int) -> Bool {
     
     // 先頭のメモは false を返す
     if num != 0 {
-        if is_same_month(MemoList: MemoList, num: num) {
-            let this_day = convert_day(memo: MemoList[num])
-            let last_day = convert_day(memo: MemoList[num - 1])
-            
-            if this_day == last_day {
-                return true
+        if num < MemoList.count {
+            if is_SameMonth(MemoList: MemoList, num: num) {
+                let this_day = ConvertDay(memo: MemoList[num])
+                let last_day = ConvertDay(memo: MemoList[num - 1])
+                
+                if this_day == last_day {
+                    return true
+                }
+                return false
             }
-            return false
+            return true
         }
         return false
     }
     return false
 }
 
-func is_same_month(MemoList: [Memo], num: Int) -> Bool {
-    
+// 1つ前のメモの年月が同じか判定
+func is_SameMonth(MemoList: [Memo], num: Int) -> Bool {
     // 先頭のメモは false を返す
     if num != 0 {
-        let this_month = convert_year_month(memo: MemoList[num])
-        let last_month = convert_year_month(memo: MemoList[num - 1])
-        
-        if this_month == last_month {
-            return true
+        if num < MemoList.count {
+            let last_month = ConvertYearMonth(memo: MemoList[num - 1])
+            let this_month = ConvertYearMonth(memo: MemoList[num])
+            
+            if this_month == last_month {
+                return true
+            }
+            return false
         }
-        return false
+        return true
     }
     return false
 }
@@ -248,19 +325,31 @@ extension View {
     }
 }
 
+// 一部の角のみを丸くしたViewを作成する
 struct PartlyRoundedCornerView: UIViewRepresentable {
     let cornerRadius: CGFloat
     let maskedCorners: CACornerMask
-
+    
     func makeUIView(context: UIViewRepresentableContext<PartlyRoundedCornerView>) -> UIView {
-        // 引数で受け取った値を利用して、一部の角のみを丸くしたViewを作成する
+        
         let uiView = UIView()
         uiView.layer.cornerRadius = cornerRadius
         uiView.layer.maskedCorners = maskedCorners
         uiView.backgroundColor = .white
         return uiView
     }
-
+    
     func updateUIView(_ uiView: UIView, context: UIViewRepresentableContext<PartlyRoundedCornerView>) {
+    }
+}
+
+// Binding にInt 型を入れる
+extension Binding where Value == Int {
+    func IntToStrDef(_ def: Int) -> Binding<String> {
+        return Binding<String>(get: {
+            return String(self.wrappedValue)
+        }) { value in
+            self.wrappedValue = Int(value) ?? def
+        }
     }
 }

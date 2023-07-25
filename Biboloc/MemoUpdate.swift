@@ -31,6 +31,12 @@ struct MemoUpdate: View {
                             )
                         }) {
                             Text("更新")
+                                .foregroundColor(.white)
+                                .padding(10)
+                                .frame(maxWidth: .infinity)
+                                .bold()
+                                .background(Color.BaseColor)
+                                .cornerRadius(12)
                             
                         }
                     }

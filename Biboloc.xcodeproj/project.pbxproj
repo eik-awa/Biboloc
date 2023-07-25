@@ -15,6 +15,8 @@
 		C57331A72A6AC07700626D03 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C57331A62A6AC07700626D03 /* Assets.xcassets */; };
 		C57331AA2A6AC07700626D03 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C57331A92A6AC07700626D03 /* Preview Assets.xcassets */; };
 		C591CACA2A6D16480063D751 /* MemoUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C591CAC92A6D16480063D751 /* MemoUpdate.swift */; };
+		C591CACC2A6FFCFC0063D751 /* MemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C591CACB2A6FFCFC0063D751 /* MemoView.swift */; };
+		C591CACE2A7000260063D751 /* AppConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = C591CACD2A7000260063D751 /* AppConstants.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -27,6 +29,8 @@
 		C57331A62A6AC07700626D03 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C57331A92A6AC07700626D03 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		C591CAC92A6D16480063D751 /* MemoUpdate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoUpdate.swift; sourceTree = "<group>"; };
+		C591CACB2A6FFCFC0063D751 /* MemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoView.swift; sourceTree = "<group>"; };
+		C591CACD2A7000260063D751 /* AppConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConstants.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,6 +67,8 @@
 				C57331A42A6AC07300626D03 /* ContentView.swift */,
 				C548D8472A6B09EA005CDBFC /* MemoCreate.swift */,
 				C591CAC92A6D16480063D751 /* MemoUpdate.swift */,
+				C591CACD2A7000260063D751 /* AppConstants.swift */,
+				C591CACB2A6FFCFC0063D751 /* MemoView.swift */,
 				C548D8432A6ACB6D005CDBFC /* Memo.swift */,
 				C548D8452A6ACDA5005CDBFC /* Tag.swift */,
 				C57331A62A6AC07700626D03 /* Assets.xcassets */,
@@ -149,8 +155,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C591CACC2A6FFCFC0063D751 /* MemoView.swift in Sources */,
 				C548D8482A6B09EA005CDBFC /* MemoCreate.swift in Sources */,
 				C548D8462A6ACDA5005CDBFC /* Tag.swift in Sources */,
+				C591CACE2A7000260063D751 /* AppConstants.swift in Sources */,
 				C591CACA2A6D16480063D751 /* MemoUpdate.swift in Sources */,
 				C548D8442A6ACB6D005CDBFC /* Memo.swift in Sources */,
 				C57331A52A6AC07300626D03 /* ContentView.swift in Sources */,
