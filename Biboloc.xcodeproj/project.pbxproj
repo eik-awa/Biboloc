@@ -14,6 +14,7 @@
 		C57331A52A6AC07300626D03 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C57331A42A6AC07300626D03 /* ContentView.swift */; };
 		C57331A72A6AC07700626D03 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C57331A62A6AC07700626D03 /* Assets.xcassets */; };
 		C57331AA2A6AC07700626D03 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C57331A92A6AC07700626D03 /* Preview Assets.xcassets */; };
+		C591CACA2A6D16480063D751 /* MemoUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C591CAC92A6D16480063D751 /* MemoUpdate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -25,6 +26,7 @@
 		C57331A42A6AC07300626D03 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		C57331A62A6AC07700626D03 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C57331A92A6AC07700626D03 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		C591CAC92A6D16480063D751 /* MemoUpdate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoUpdate.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,6 +62,7 @@
 				C57331A22A6AC07300626D03 /* BibolocApp.swift */,
 				C57331A42A6AC07300626D03 /* ContentView.swift */,
 				C548D8472A6B09EA005CDBFC /* MemoCreate.swift */,
+				C591CAC92A6D16480063D751 /* MemoUpdate.swift */,
 				C548D8432A6ACB6D005CDBFC /* Memo.swift */,
 				C548D8452A6ACDA5005CDBFC /* Tag.swift */,
 				C57331A62A6AC07700626D03 /* Assets.xcassets */,
@@ -148,6 +151,7 @@
 			files = (
 				C548D8482A6B09EA005CDBFC /* MemoCreate.swift in Sources */,
 				C548D8462A6ACDA5005CDBFC /* Tag.swift in Sources */,
+				C591CACA2A6D16480063D751 /* MemoUpdate.swift in Sources */,
 				C548D8442A6ACB6D005CDBFC /* Memo.swift in Sources */,
 				C57331A52A6AC07300626D03 /* ContentView.swift in Sources */,
 				C57331A32A6AC07300626D03 /* BibolocApp.swift in Sources */,

@@ -2,18 +2,17 @@
 //  MemoCreate.swift
 //  Biboloc
 //
-//  Created by awa on 2023/07/22.
+//  Created by awa on 2023/07/23.
 //
 
 import SwiftUI
 
-struct MemoCreate: View {
+struct MemoUpdate: View {
     
-    @Binding var isDisplay_MemoCreate: Bool
+    @Binding var isDisplay_MemoUpdate: Bool
+    @Binding var memo: Memo
     @State var database: Database
     @FocusState var focus:Bool
-    
-    @State var text = ""
     
     var body: some View {
         ZStack {
@@ -21,17 +20,17 @@ struct MemoCreate: View {
                 ZStack {
                     
                     VStack {
-                        TextEditor(text: $text)
+                        TextEditor(text: $memo.text)
                             .focused(self.$focus)
                         
                         Button(action: {
-                            isDisplay_MemoCreate = false
-                            database.createMemo(
-                                memo: Memo(Date(), text, [], false)
+                            isDisplay_MemoUpdate = false
+                            database.updateMemo(
+                                memo: memo,
+                                memoData: Memo(Date(), memo.text, [], false)
                             )
-                            text = ""
                         }) {
-                            Text("登録")
+                            Text("更新")
                             
                         }
                     }
@@ -43,7 +42,7 @@ struct MemoCreate: View {
                             Button {
                                 withAnimation {
                                     focus = false
-                                    isDisplay_MemoCreate = false
+                                    isDisplay_MemoUpdate = false
                                 }
                             } label: {
                                 Image(systemName: "xmark")
