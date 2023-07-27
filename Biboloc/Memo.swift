@@ -10,7 +10,7 @@ import Foundation.NSObject
 class Memo: NSObject, Identifiable, NSCoding {
     
     public var id = UUID()
-    var created_at: Date?
+    var created_at: Date
     var text: String
     var tag: [Tag]
     var deleted: Bool = false

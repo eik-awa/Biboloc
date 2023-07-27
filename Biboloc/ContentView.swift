@@ -9,8 +9,8 @@ import SwiftUI
 
 struct ContentView: View {
     @ObservedObject var database: Database
-    @State private var is_Display_MemoCreate = false
-    @State private var is_Display_MemoUpdate = false
+    @State private var is_New = true
+    @State private var is_Display_MemoEdit = false
     @State private var selected_memo = Memo(Date(), "", [], false)
     var body: some View {
         ZStack {
@@ -39,15 +39,16 @@ struct ContentView: View {
                         num in
                         
                         if !is_SameMonth(MemoList: database.MemoList, num: num) {
-                            Text("\(ConvertYearMonth(memo: database.MemoList[num]))")
+                            Text("\(ConvertYearMonth(date: database.MemoList[num].created_at))")
                         }
                         
                         switch StatusDate_Prev_and_Next(MemoList: database.MemoList, num: num) {
                         case AppConstants.CALENDAR_NOT_SAME_DATE_PREV_AND_NEXT:
                             // テキスト
-                                MemoDateView(
+                                MemoView_DisplayDate(
                                     memo: $database.MemoList[num],
-                                    is_Display_MemoUpdate: $is_Display_MemoUpdate,
+                                    is_New: $is_New,
+                                    is_Display_MemoEdit: $is_Display_MemoEdit,
                                     selected_memo: $selected_memo
                                 )
                                 .frame(width: UIScreen.main.bounds.size.width * 0.9, height: AppConstants.MEMO_HEIGHT)
@@ -57,9 +58,10 @@ struct ContentView: View {
                             
                         case AppConstants.CALENDAR_SAME_DATE_NEXT_ONLY:
                                 // テキスト
-                                MemoDateView(
+                                MemoView_DisplayDate(
                                     memo: $database.MemoList[num],
-                                    is_Display_MemoUpdate: $is_Display_MemoUpdate,
+                                    is_New: $is_New,
+                                    is_Display_MemoEdit: $is_Display_MemoEdit,
                                     selected_memo: $selected_memo
                                 )
                             .frame(width: UIScreen.main.bounds.size.width * 0.9, height: AppConstants.MEMO_HEIGHT)
@@ -74,7 +76,8 @@ struct ContentView: View {
                             // テキスト
                             MemoView(
                                 memo: $database.MemoList[num],
-                                is_Display_MemoUpdate: $is_Display_MemoUpdate,
+                                is_New: $is_New,
+                                is_Display_MemoEdit: $is_Display_MemoEdit,
                                 selected_memo: $selected_memo
                             )
                             .frame(width: UIScreen.main.bounds.size.width * 0.9, height: AppConstants.MEMO_HEIGHT)
@@ -89,7 +92,8 @@ struct ContentView: View {
                             // テキスト
                             MemoView(
                                 memo: $database.MemoList[num],
-                                is_Display_MemoUpdate: $is_Display_MemoUpdate,
+                                is_New: $is_New,
+                                is_Display_MemoEdit: $is_Display_MemoEdit,
                                 selected_memo: $selected_memo
                             )
                             .frame(width: UIScreen.main.bounds.size.width * 0.9, height: AppConstants.MEMO_HEIGHT)
@@ -114,13 +118,12 @@ struct ContentView: View {
             Rectangle()
             // ポップアップ系画面の表示中は、背景をグレーにする
             //スタンプカード画面、スタンプ獲得画面
-                .fill((is_Display_MemoCreate || is_Display_MemoUpdate) ? .gray.opacity(0.7) : .clear)
+                .fill((is_Display_MemoEdit) ? .gray.opacity(0.7) : .clear)
                 .edgesIgnoringSafeArea(.all)
             
             // タップすると、ポップアップが消える
                 .onTapGesture {
-                    is_Display_MemoCreate = false
-                    is_Display_MemoUpdate = false
+                    is_Display_MemoEdit = false
                 }
             
             
@@ -157,7 +160,9 @@ struct ContentView: View {
                         
                         VStack{
                             Button(action: {
-                                is_Display_MemoCreate = true
+                                selected_memo = Memo(Date(), "", [], false)
+                                is_New = true
+                                is_Display_MemoEdit = true
                             }) {
                                 Circle()
                                     .fill(.clear)
@@ -170,16 +175,10 @@ struct ContentView: View {
                 .frame(height: 130)
                 .edgesIgnoringSafeArea(.all)
             }
-            .popup(isPresented: $is_Display_MemoCreate){
-                MemoCreate(
-                    is_Display_MemoCreate: $is_Display_MemoCreate,
-                    database: database
-                )
-            }
-            
-            .popup(isPresented: $is_Display_MemoUpdate){
-                MemoUpdate(
-                    isDisplay_MemoUpdate: $is_Display_MemoUpdate,
+            .popup(isPresented: $is_Display_MemoEdit){
+                MemoEdit(
+                    is_New: $is_New,
+                    is_Display_MemoEdit: $is_Display_MemoEdit,
                     memo: $selected_memo,
                     database: database
                 )
@@ -190,28 +189,42 @@ struct ContentView: View {
 
 
 // Date型から年月に変換
-func ConvertYearMonth(memo: Memo) -> String {
+func ConvertYearMonth(date: Date) -> String {
     let calendar = Calendar(identifier: .gregorian)
-    let year = calendar.component(.year, from: memo.created_at ?? Date())
-    let month = calendar.component(.month, from: memo.created_at ?? Date())
+    let year = calendar.component(.year, from: date)
+    let month = calendar.component(.month, from: date)
     
-    return "\(year) / \(month)"
+    return "\(year). \(month)"
 }
 
 // Date型から曜日に変換
-func ConvertWeekDay(memo: Memo) -> String {
+func ConvertWeekDay(date: Date) -> String {
     let calendar = Calendar(identifier: .gregorian)
-    let WeekDayNumber = calendar.component(.weekday, from: memo.created_at ?? Date())
+    let WeekDayNumber = calendar.component(.weekday, from: date)
     
     return calendar.weekdaySymbols[WeekDayNumber - 1]
 }
 
 // Date型から日付に変換
-func ConvertDay(memo: Memo) -> Int {
+func ConvertDay(date: Date) -> Int {
     let calendar = Calendar(identifier: .gregorian)
-    let day = calendar.component(.day, from: memo.created_at ?? Date())
+    let day = calendar.component(.day, from: date)
     
     return day
+}
+
+// 現在時刻を表示 2023.7.27 Thu 19:20
+func ConvertTime(date: Date) -> String {
+    /// DateFomatterクラスのインスタンス生成
+    let dateFormatter = DateFormatter()
+    dateFormatter.locale = Locale(identifier: "en_US")
+    dateFormatter.timeZone = TimeZone(identifier: "Asia/Tokyo")
+     
+    dateFormatter.calendar = Calendar(identifier: .gregorian)
+    dateFormatter.dateFormat = "yyyy. M. d E HH:mm"
+     
+    /// データ変換
+    return dateFormatter.string(from: date)
 }
 
 // 前後の日付が同じか判定
@@ -267,8 +280,8 @@ func is_SameDate(MemoList: [Memo], num: Int) -> Bool {
     if num != 0 {
         if num < MemoList.count {
             if is_SameMonth(MemoList: MemoList, num: num) {
-                let this_day = ConvertDay(memo: MemoList[num])
-                let last_day = ConvertDay(memo: MemoList[num - 1])
+                let this_day = ConvertDay(date: MemoList[num].created_at)
+                let last_day = ConvertDay(date: MemoList[num - 1].created_at)
                 
                 if this_day == last_day {
                     return true
@@ -287,8 +300,8 @@ func is_SameMonth(MemoList: [Memo], num: Int) -> Bool {
     // 先頭のメモは false を返す
     if num != 0 {
         if num < MemoList.count {
-            let last_month = ConvertYearMonth(memo: MemoList[num - 1])
-            let this_month = ConvertYearMonth(memo: MemoList[num])
+            let last_month = ConvertYearMonth(date: MemoList[num - 1].created_at)
+            let this_month = ConvertYearMonth(date: MemoList[num].created_at)
             
             if this_month == last_month {
                 return true
@@ -340,16 +353,5 @@ struct PartlyRoundedCornerView: UIViewRepresentable {
     }
     
     func updateUIView(_ uiView: UIView, context: UIViewRepresentableContext<PartlyRoundedCornerView>) {
-    }
-}
-
-// Binding にInt 型を入れる
-extension Binding where Value == Int {
-    func IntToStrDef(_ def: Int) -> Binding<String> {
-        return Binding<String>(get: {
-            return String(self.wrappedValue)
-        }) { value in
-            self.wrappedValue = Int(value) ?? def
-        }
     }
 }

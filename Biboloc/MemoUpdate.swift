@@ -17,63 +17,62 @@ struct MemoUpdate: View {
     var body: some View {
         ZStack {
             VStack {
-                ZStack {
+                
+                // 閉じるボタン
+                HStack {
+                    Spacer()
                     
-                    VStack {
-                        TextEditor(text: $memo.text)
-                            .focused(self.$focus)
-                        
-                        Button(action: {
+                    Text("\(ConvertTime(date: memo.created_at))")
+                    
+                    Spacer()
+                    Button {
+                        withAnimation {
+                            focus = false
                             isDisplay_MemoUpdate = false
-                            database.updateMemo(
-                                memo: memo,
-                                memoData: Memo(Date(), memo.text, [], false)
-                            )
-                        }) {
-                            Text("更新")
-                                .foregroundColor(.white)
-                                .padding(10)
-                                .frame(maxWidth: .infinity)
-                                .bold()
-                                .background(Color.BaseColor)
-                                .cornerRadius(12)
-                            
                         }
+                    } label: {
+                        Image(systemName: "xmark")
+                            .foregroundColor(.black)
+                            .font(Font.system(size: 20))
                     }
+                }
+                
+                VStack {
+                    TextEditor(text: $memo.text)
+                        .focused(self.$focus)
                     
-                    // 閉じるボタン
-                    VStack {
-                        HStack {
-                            Spacer()
-                            Button {
-                                withAnimation {
-                                    focus = false
-                                    isDisplay_MemoUpdate = false
-                                }
-                            } label: {
-                                Image(systemName: "xmark")
-                                    .foregroundColor(.black)
-                                    .font(Font.system(size: 20))
-                            }
-                        }
-                        Spacer()
+                    Button(action: {
+                        isDisplay_MemoUpdate = false
+                        database.updateMemo(
+                            memo: memo,
+                            memoData: Memo(Date(), memo.text, [], false)
+                        )
+                    }) {
+                        Text("更新")
+                            .foregroundColor(.white)
+                            .padding(10)
+                            .frame(maxWidth: .infinity)
+                            .bold()
+                            .background(Color.BaseColor)
+                            .cornerRadius(12)
+                        
                     }
                 }
             }
-            .frame(width: 320, height: 440)
-            .padding()
-            .scaledToFit()
-            .background(.white)
-            
-            if self.focus == true {
-                Button(action: {
-                    self.focus = false
-                }) {
-                    Rectangle()
-                        .fill(.clear)
-                        .frame(width: 320, height: 440)
-                        .padding()
-                }
+        }
+        .frame(width: 320, height: 440)
+        .padding()
+        .scaledToFit()
+        .background(.white)
+        
+        if self.focus == true {
+            Button(action: {
+                self.focus = false
+            }) {
+                Rectangle()
+                    .fill(.clear)
+                    .frame(width: 320, height: 440)
+                    .padding()
             }
         }
     }

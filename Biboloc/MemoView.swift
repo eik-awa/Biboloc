@@ -9,7 +9,8 @@ import SwiftUI
 
 struct MemoView: View {
     @Binding var memo: Memo
-    @Binding var is_Display_MemoUpdate: Bool
+    @Binding var is_New: Bool
+    @Binding var is_Display_MemoEdit: Bool
     @Binding var selected_memo: Memo
     var body: some View {
         
@@ -37,7 +38,8 @@ struct MemoView: View {
                     Spacer()
                 }
                 Button(action: {
-                    is_Display_MemoUpdate = true
+                    is_New = false
+                    is_Display_MemoEdit = true
                     selected_memo = memo
                 }) {
                     Rectangle()
@@ -49,9 +51,10 @@ struct MemoView: View {
 }
 
 
-struct MemoDateView: View {
+struct MemoView_DisplayDate: View {
     @Binding var memo: Memo
-    @Binding var is_Display_MemoUpdate: Bool
+    @Binding var is_New: Bool
+    @Binding var is_Display_MemoEdit: Bool
     @Binding var selected_memo: Memo
     var body: some View {
         
@@ -61,10 +64,10 @@ struct MemoDateView: View {
             
             HStack {
                 VStack {
-                    Text("\(ConvertDay(memo: memo))")
+                    Text("\(ConvertDay(date: memo.created_at))")
                         .font(.largeTitle)
                     
-                    Text("\(ConvertWeekDay(memo: memo))")
+                    Text("\(ConvertWeekDay(date: memo.created_at))")
                         .font(.footnote)
                 }
                 .frame(width: 45, height: 50)
@@ -74,7 +77,8 @@ struct MemoDateView: View {
                 Spacer()
             }
             Button(action: {
-                is_Display_MemoUpdate = true
+                is_New = false
+                is_Display_MemoEdit = true
                 selected_memo = memo
             }) {
                 Rectangle()
