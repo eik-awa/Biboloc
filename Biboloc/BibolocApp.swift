@@ -11,7 +11,6 @@ import Foundation
 @main
 struct BibolocApp: App {
     @StateObject var database = Database()
-    init() {}
     
     var body: some Scene {
         WindowGroup {
@@ -26,8 +25,16 @@ struct BibolocApp: App {
 
 class Database: ObservableObject {
     // 表示用データ
-    @Published var TagList: Array<Tag> = [Tag(name: "備忘録", false)]
-    @Published var MemoList: Array<Memo> = [Memo(Date(), "Biboloc チュートリアル", [Tag(name: "備忘録", false)], false)]
+    @Published var TagList: Array<Tag> = [Tag(name: "備忘録", used_at: Date(), deleted: false)]
+    @Published var MemoList: Array<Memo> = [
+        Memo(
+            created_at: Date(),
+            text: "Biboloc チュートリアル",
+            tag: [Tag(name: "備忘録", used_at: Date(), deleted: false)],
+            favorite: false,
+            deleted: false
+        )
+    ]
     
     
     // 内部ストレージ、表示用データを合わせる
@@ -56,21 +63,30 @@ class Database: ObservableObject {
     func createMemo(memo: Memo) {
         MemoList += [memo]
         MemoList = MemoList.sorted {
-                return $0.created_at < $1.created_at
-            }
+            return $0.created_at < $1.created_at
+        }
         setUserDefault(object: MemoList, key: "MemoData")
     }
     
     func updateMemo() {
         MemoList = MemoList.sorted {
-                return $0.created_at < $1.created_at
-            }
+            return $0.created_at < $1.created_at
+        }
         setUserDefault(object: MemoList, key: "MemoData")
     }
     
+    func deleteMemo(memo: Memo) {
+        memo.deleted = true
+        setUserDefault(object: MemoList, key: "MemoData")
+        
+    }
+    
     // Tag 更新
-    func updateTag(tag: Tag) {
+    func createTag(tag: Tag) {
         TagList += [tag]
+        TagList = TagList.sorted {
+            return $0.used_at > $1.used_at
+        }
         setUserDefault(object: TagList, key: "TagData")
     }
     

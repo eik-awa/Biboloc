@@ -11,7 +11,7 @@ struct ContentView: View {
     @ObservedObject var database: Database
     @State private var is_New = true
     @State private var is_Display_MemoEdit = false
-    @State private var selected_memo = Memo(Date(), "", [], false)
+    @State private var selected_memo = Memo(created_at: Date(), text: "", tag: [], favorite: false, deleted: false)
     var body: some View {
         ZStack {
             // 背景
@@ -37,14 +37,14 @@ struct ContentView: View {
                 ScrollView(.vertical, showsIndicators: false) {
                     ForEach(0..<database.MemoList.count, id: \.self) {
                         num in
-                        
-                        if !is_SameMonth(MemoList: database.MemoList, num: num) {
-                            Text("\(ConvertYearMonth(date: database.MemoList[num].created_at))")
-                        }
-                        
-                        switch StatusDate_Prev_and_Next(MemoList: database.MemoList, num: num) {
-                        case AppConstants.CALENDAR_NOT_SAME_DATE_PREV_AND_NEXT:
-                            // テキスト
+                        if !database.MemoList[num].deleted {
+                            if !is_SameMonth(MemoList: database.MemoList, num: num) {
+                                Text("\(ConvertYearMonth(date: database.MemoList[num].created_at))")
+                            }
+                            
+                            switch StatusDate_Prev_and_Next(MemoList: database.MemoList, num: num) {
+                            case AppConstants.CALENDAR_NOT_SAME_DATE_PREV_AND_NEXT:
+                                // テキスト
                                 MemoView_DisplayDate(
                                     memo: $database.MemoList[num],
                                     is_New: $is_New,
@@ -55,8 +55,8 @@ struct ContentView: View {
                                 .cornerRadius(10)
                                 .padding(.top, 4)
                                 .padding(.bottom, 4)
-                            
-                        case AppConstants.CALENDAR_SAME_DATE_NEXT_ONLY:
+                                
+                            case AppConstants.CALENDAR_SAME_DATE_NEXT_ONLY:
                                 // テキスト
                                 MemoView_DisplayDate(
                                     memo: $database.MemoList[num],
@@ -64,49 +64,50 @@ struct ContentView: View {
                                     is_Display_MemoEdit: $is_Display_MemoEdit,
                                     selected_memo: $selected_memo
                                 )
-                            .frame(width: UIScreen.main.bounds.size.width * 0.9, height: AppConstants.MEMO_HEIGHT)
-                            .mask(PartlyRoundedCornerView(
-                                cornerRadius: 10,
-                                maskedCorners: [.layerMinXMinYCorner, .layerMaxXMinYCorner]
-                            ))
-                            .padding(.bottom, -4)
-                            .padding(.top, 4)
-                            
-                        case AppConstants.CALENDAR_SAME_DATE_PREV_ONLY:
-                            // テキスト
-                            MemoView(
-                                memo: $database.MemoList[num],
-                                is_New: $is_New,
-                                is_Display_MemoEdit: $is_Display_MemoEdit,
-                                selected_memo: $selected_memo
-                            )
-                            .frame(width: UIScreen.main.bounds.size.width * 0.9, height: AppConstants.MEMO_HEIGHT)
-                            .mask(PartlyRoundedCornerView(
-                                cornerRadius: 10,
-                                maskedCorners: [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
-                            ))
-                            .padding(.top, -4)
-                            .padding(.bottom, 4)
-                            
-                        case AppConstants.CALENDAR_SAME_DATE_PREV_AND_NEXT:
-                            // テキスト
-                            MemoView(
-                                memo: $database.MemoList[num],
-                                is_New: $is_New,
-                                is_Display_MemoEdit: $is_Display_MemoEdit,
-                                selected_memo: $selected_memo
-                            )
-                            .frame(width: UIScreen.main.bounds.size.width * 0.9, height: AppConstants.MEMO_HEIGHT)
-                            .padding(.top, -4)
-                            .padding(.bottom, -4)
-                            
-                        default:
-                            Text("error")
+                                .frame(width: UIScreen.main.bounds.size.width * 0.9, height: AppConstants.MEMO_HEIGHT)
+                                .mask(PartlyRoundedCornerView(
+                                    cornerRadius: 10,
+                                    maskedCorners: [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+                                ))
+                                .padding(.bottom, -4)
+                                .padding(.top, 4)
+                                
+                            case AppConstants.CALENDAR_SAME_DATE_PREV_ONLY:
+                                // テキスト
+                                MemoView(
+                                    memo: $database.MemoList[num],
+                                    is_New: $is_New,
+                                    is_Display_MemoEdit: $is_Display_MemoEdit,
+                                    selected_memo: $selected_memo
+                                )
+                                .frame(width: UIScreen.main.bounds.size.width * 0.9, height: AppConstants.MEMO_HEIGHT)
+                                .mask(PartlyRoundedCornerView(
+                                    cornerRadius: 10,
+                                    maskedCorners: [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+                                ))
+                                .padding(.top, -4)
+                                .padding(.bottom, 4)
+                                
+                            case AppConstants.CALENDAR_SAME_DATE_PREV_AND_NEXT:
+                                // テキスト
+                                MemoView(
+                                    memo: $database.MemoList[num],
+                                    is_New: $is_New,
+                                    is_Display_MemoEdit: $is_Display_MemoEdit,
+                                    selected_memo: $selected_memo
+                                )
+                                .frame(width: UIScreen.main.bounds.size.width * 0.9, height: AppConstants.MEMO_HEIGHT)
+                                .padding(.top, -4)
+                                .padding(.bottom, -4)
+                                
+                            default:
+                                Text("error")
+                            }
                         }
                     }
-                    Rectangle()
-                        .fill(.clear)
-                        .frame(height: 110)
+                        Rectangle()
+                            .fill(.clear)
+                            .frame(height: 110)
                 }
                 .frame(height: UIScreen.main.bounds.size.height - 100)
                 
@@ -124,6 +125,8 @@ struct ContentView: View {
             // タップすると、ポップアップが消える
                 .onTapGesture {
                     is_Display_MemoEdit = false
+                    // キーボードを非表示に
+                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
                 }
             
             
@@ -133,12 +136,70 @@ struct ContentView: View {
                     VStack {
                         Spacer()
                         
-                        Rectangle()
-                            .fill(Color.white)
-                            .frame(maxWidth: .infinity)
-                            .edgesIgnoringSafeArea(.all)
-                            .cornerRadius(40)
-                            .frame(height: 100)
+                        ZStack {
+                            Rectangle()
+                                .fill(Color.white)
+                                .frame(width: UIScreen.main.bounds.size.width)
+                                .edgesIgnoringSafeArea(.all)
+                                .cornerRadius(40)
+                                .frame(height: 100)
+                            
+                            VStack {
+                                
+                                Spacer()
+                                
+                                HStack(spacing: UIScreen.main.bounds.size.width / 5 - 30) {
+                                    Spacer()
+                                    
+                                    Button(action: {
+                                        
+                                    }) {
+                                        Image(systemName: "gearshape")
+                                            .foregroundColor(.gray)
+                                            .font(.system(size: 30, design: .serif))
+                                            .frame(width: 30, height: 30)
+                                    }
+                                    
+                                    Button(action: {
+                                        
+                                    }) {
+                                        Image(systemName: "star")
+                                            .foregroundColor(.gray)
+                                            .font(.system(size: 30, design: .serif))
+                                            .frame(width: 30, height: 30)
+                                    }
+                                    
+                                    Rectangle()
+                                        .foregroundColor(.clear)
+                                        .frame(width: 30, height: 30)
+                                    
+                                    Button(action: {
+                                        
+                                    }) {
+                                        Image(systemName: "number")
+                                            .foregroundColor(.gray)
+                                            .font(.system(size: 30, design: .serif))
+                                            .frame(width: 30, height: 30)
+                                    }
+                                    
+                                    Button(action: {
+                                        
+                                    }) {
+                                        Image(systemName: "calendar")
+                                            .foregroundColor(.gray)
+                                            .font(.system(size: 30, design: .serif))
+                                            .frame(width: 30, height: 30)
+                                    }
+                                    
+                                    Spacer()
+                                }
+                                Spacer()
+                                
+                                Rectangle()
+                                    .fill(.clear)
+                                    .frame(width: UIScreen.main.bounds.size.width, height: 20)
+                            }
+                        }
                     }
                     
                     ZStack {
@@ -160,7 +221,13 @@ struct ContentView: View {
                         
                         VStack{
                             Button(action: {
-                                selected_memo = Memo(Date(), "", [], false)
+                                selected_memo = Memo(
+                                    created_at: Date(),
+                                    text: "",
+                                    tag: [],
+                                    favorite: false,
+                                    deleted: false
+                                )
                                 is_New = true
                                 is_Display_MemoEdit = true
                             }) {

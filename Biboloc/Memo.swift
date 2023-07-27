@@ -13,12 +13,14 @@ class Memo: NSObject, Identifiable, NSCoding {
     var created_at: Date
     var text: String
     var tag: [Tag]
+    var favorite: Bool = false
     var deleted: Bool = false
     
-    init(_ created_at: Date, _ text: String, _ tag: [Tag], _ deleted: Bool) {
+    init(created_at: Date, text: String, tag: [Tag], favorite: Bool, deleted: Bool) {
         self.created_at = created_at
         self.text = text
         self.tag = tag
+        self.favorite = favorite
         self.deleted = deleted
     }
     
@@ -26,6 +28,7 @@ class Memo: NSObject, Identifiable, NSCoding {
         created_at = coder.decodeObject(forKey: "created_at") as? Date ?? Date()
         text = coder.decodeObject(forKey: "text") as! String
         tag = coder.decodeObject(forKey: "tag") as! [Tag]
+        favorite = coder.decodeBool(forKey: "favorite")
         deleted = coder.decodeBool(forKey: "deleted")
     }
     
@@ -33,6 +36,7 @@ class Memo: NSObject, Identifiable, NSCoding {
         coder.encode(created_at, forKey: "created_at")
         coder.encode(text, forKey: "text")
         coder.encode(tag, forKey: "tag")
+        coder.encode(favorite, forKey: "favorite")
         coder.encode(deleted, forKey: "deleted")
     }
 }
