@@ -63,14 +63,14 @@ class Database: ObservableObject {
     func createMemo(memo: Memo) {
         MemoList += [memo]
         MemoList = MemoList.sorted {
-            return $0.created_at < $1.created_at
+            return $0.created_at > $1.created_at
         }
         setUserDefault(object: MemoList, key: "MemoData")
     }
     
     func updateMemo() {
         MemoList = MemoList.sorted {
-            return $0.created_at < $1.created_at
+            return $0.created_at > $1.created_at
         }
         setUserDefault(object: MemoList, key: "MemoData")
     }
@@ -84,6 +84,13 @@ class Database: ObservableObject {
     // Tag 更新
     func createTag(tag: Tag) {
         TagList += [tag]
+        TagList = TagList.sorted {
+            return $0.used_at > $1.used_at
+        }
+        setUserDefault(object: TagList, key: "TagData")
+    }
+    
+    func updateTag() {
         TagList = TagList.sorted {
             return $0.used_at > $1.used_at
         }

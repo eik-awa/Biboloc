@@ -23,6 +23,18 @@ struct MemoEdit: View {
     
     var body: some View {
         ZStack {
+            
+            
+            if (focusedField != nil) == true {
+                Button(action: {
+                    focusedField = nil
+                }) {
+                    Rectangle()
+                        .fill(.clear)
+                        .frame(width: 320, height: 440)
+                        .padding()
+                }
+            }
             VStack {
                 ZStack {
                     VStack {
@@ -59,10 +71,22 @@ struct MemoEdit: View {
                     }
                 }.frame(height: 40)
                 
-                TextEditor(text: $memo.text)
-                    .focused($focusedField, equals: .memo)
+                ZStack {
+                    TextEditor(text: $memo.text)
+                        .focused($focusedField, equals: .memo)
+                    
+                    
+                    Button(action: {
+                        focusedField = nil
+                    }) {
+                        Rectangle()
+                            .fill(.clear)
+                            .padding()
+                    }
+                }
+                    
+                    Spacer()
                 
-                Spacer()
                 
                 VStack {
                     ScrollView (.horizontal, showsIndicators: false){
@@ -72,7 +96,7 @@ struct MemoEdit: View {
                                 .foregroundColor(.white)
                                 .accentColor(.white)
                                 .padding(10)
-                                .background(Color.BaseColor)
+                                .background(Color.gray.opacity(0.4))
                                 .frame(width: 100,height: 30)
                                 .cornerRadius(15)
                                 .focused($focusedField, equals: .tag)
@@ -84,6 +108,7 @@ struct MemoEdit: View {
                                         database.createTag(tag: Tag(name: NewTag, used_at: Date(), deleted: false))
                                     } else {
                                         database.TagList[IndexTag(TagList: database.TagList, name: NewTag)].used_at = Date()
+                                        database.updateTag()
                                     }
                                     
                                     if (IndexTag(TagList: memo.tag, name: NewTag) == -1) {
@@ -92,29 +117,15 @@ struct MemoEdit: View {
                                     }
                                     NewTag = ""
                                 }
-                                }) {
+                            }) {
                                 Image(systemName: "plus.circle.fill")
-                                    .foregroundColor(Color.BaseColor)
+                                    .foregroundColor(Color.MainColor)
                                     .font(.system(size: 30, weight: .bold, design: .serif))
                                     .frame(width: 30,height: 30)
                             }
                             ForEach(database.TagList, id: \.self) { tag in
                                 
-                                if (IndexTag(TagList: memo.tag, name: tag.name) == -1) {
-                                    Button(action: {
-                                        memo.tag.append(tag)
-                                        tag.used_at = Date()
-                                        database.updateMemo()
-                                    }) {
-                                        Text("# \(tag.name)")
-                                            .foregroundColor(.white)
-                                            .padding(10)
-                                            .bold()
-                                            .frame(height: 30)
-                                            .background(Color.gray.opacity(0.5))
-                                            .cornerRadius(15)
-                                    }
-                                } else {
+                                if (IndexTag(TagList: memo.tag, name: tag.name) != -1) {
                                     Button(action: {
                                         if (IndexTag(TagList: memo.tag, name: tag.name) != -1) {
                                             memo.tag.remove(at: IndexTag(TagList: memo.tag, name: tag.name))
@@ -126,7 +137,26 @@ struct MemoEdit: View {
                                             .padding(10)
                                             .bold()
                                             .frame(height: 30)
-                                            .background(Color.BaseColor)
+                                            .background(Color.BaseColor.opacity(0.7))
+                                            .cornerRadius(15)
+                                    }
+                                }
+                            }
+                            ForEach(database.TagList, id: \.self) { tag in
+                                
+                                if (IndexTag(TagList: memo.tag, name: tag.name) == -1) {
+                                    Button(action: {
+                                        memo.tag.append(tag)
+                                        tag.used_at = Date()
+                                        database.updateMemo()
+                                        database.updateTag()
+                                    }) {
+                                        Text("# \(tag.name)")
+                                            .foregroundColor(.white)
+                                            .padding(10)
+                                            .bold()
+                                            .frame(height: 30)
+                                            .background(Color.gray.opacity(0.4))
                                             .cornerRadius(15)
                                     }
                                 }
@@ -149,6 +179,7 @@ struct MemoEdit: View {
                             }
                             
                             Button(action: {
+                                focusedField = nil
                                 is_Display_MemoEdit = false
                                 if is_New {
                                     database.createMemo(
@@ -156,6 +187,20 @@ struct MemoEdit: View {
                                     )
                                 } else {
                                     database.updateMemo()
+                                }
+                                if NewTag != "" {
+                                    if (IndexTag(TagList: database.TagList, name: NewTag) == -1) {
+                                        database.createTag(tag: Tag(name: NewTag, used_at: Date(), deleted: false))
+                                    } else {
+                                        database.TagList[IndexTag(TagList: database.TagList, name: NewTag)].used_at = Date()
+                                        database.updateTag()
+                                    }
+                                    
+                                    if (IndexTag(TagList: memo.tag, name: NewTag) == -1) {
+                                        memo.tag.append(Tag(name: NewTag, used_at: Date(), deleted: false))
+                                        database.updateMemo()
+                                    }
+                                    NewTag = ""
                                 }
                             }) {
                                 Text("登録")
@@ -169,6 +214,7 @@ struct MemoEdit: View {
                         }
                     } else {
                         Button(action: {
+                            focusedField = nil
                             is_Display_MemoEdit = false
                             if is_New {
                                 database.createMemo(
@@ -176,6 +222,20 @@ struct MemoEdit: View {
                                 )
                             } else {
                                 database.updateMemo()
+                            }
+                            if NewTag != "" {
+                                if (IndexTag(TagList: database.TagList, name: NewTag) == -1) {
+                                    database.createTag(tag: Tag(name: NewTag, used_at: Date(), deleted: false))
+                                } else {
+                                    database.TagList[IndexTag(TagList: database.TagList, name: NewTag)].used_at = Date()
+                                    database.updateTag()
+                                }
+                                
+                                if (IndexTag(TagList: memo.tag, name: NewTag) == -1) {
+                                    memo.tag.append(Tag(name: NewTag, used_at: Date(), deleted: false))
+                                    database.updateMemo()
+                                }
+                                NewTag = ""
                             }
                         }) {
                             Text("登録")
@@ -196,17 +256,6 @@ struct MemoEdit: View {
             .padding()
             .scaledToFit()
             .background(.white)
-            
-            if (focusedField != nil) == true {
-                Button(action: {
-                    focusedField = nil
-                }) {
-                    Rectangle()
-                        .fill(.clear)
-                        .frame(width: 320, height: 440)
-                        .padding()
-                }
-            }
         }
     }
 }
