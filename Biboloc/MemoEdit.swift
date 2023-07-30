@@ -169,6 +169,7 @@ struct MemoEdit: View {
                     if !is_New {
                         HStack {
                             Button(action: {
+                                focusedField = nil
                                 is_Display_MemoEdit = false
                                 database.deleteMemo(memo: memo)
                             }) {
@@ -206,10 +207,33 @@ struct MemoEdit: View {
                                 Text("登録")
                                     .foregroundColor(.white)
                                     .padding(5)
-                                    .frame(width: 280, height: 40)
+                                    .frame(width: 240, height: 40)
                                     .bold()
                                     .background(Color.BaseColor)
                                     .cornerRadius(20)
+                            }
+                            if memo.favorite {
+                                Button(action: {
+                                    memo.favorite = false
+                                    database.updateMemo()
+                                }) {
+                                    
+                                    Image(systemName: "star.circle.fill")
+                                        .foregroundColor(Color.MainColor)
+                                        .font(.system(size: 30, weight: .bold, design: .serif))
+                                        .frame(width: 30, height: 30)
+                                }
+                            } else {
+                                Button(action: {
+                                    memo.favorite = true
+                                    database.updateMemo()
+                                }) {
+                                    
+                                    Image(systemName: "star.circle.fill")
+                                        .foregroundColor(Color.gray.opacity(0.5))
+                                        .font(.system(size: 30, weight: .bold, design: .serif))
+                                        .frame(width: 30, height: 30)
+                                }
                             }
                         }
                     } else {
@@ -241,7 +265,7 @@ struct MemoEdit: View {
                             Text("登録")
                                 .foregroundColor(.white)
                                 .padding(5)
-                                .frame(width: 280, height: 40)
+                                .frame(width: 240, height: 40)
                                 .bold()
                                 .background(Color.BaseColor)
                                 .cornerRadius(20)

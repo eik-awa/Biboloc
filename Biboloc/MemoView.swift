@@ -74,6 +74,7 @@ struct MemoView_DisplayDate: View {
                 .padding()
                 
                 Text("\(memo.text)")
+                    .frame(height: 50)
                 Spacer()
             }
             Button(action: {
