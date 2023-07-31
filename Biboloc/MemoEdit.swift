@@ -8,24 +8,30 @@
 import SwiftUI
 
 struct MemoEdit: View {
+    // ２つのテキストフィールドを制御
     enum Field: Hashable {
         case memo
         case tag
     }
     
+    // 新規/編集 フラグ
     @Binding var is_New: Bool
+    // 画面表示 フラグ
     @Binding var is_Display_MemoEdit: Bool
+    // memo モデル
     @Binding var memo: Memo
+    // メモ、タグデータ
     @ObservedObject var database: Database
+    // キーボードの表示制御
     @FocusState var focusedField: Field?
-    
+    // タグのテキストフィールド
     @State private var NewTag = ""
     
     var body: some View {
         ZStack {
             
-            
-            if (focusedField != nil) == true {
+            // メモ編集画面内をクリックするとキーボードを非表示にする
+            if (focusedField != nil) {
                 Button(action: {
                     focusedField = nil
                 }) {
@@ -33,29 +39,29 @@ struct MemoEdit: View {
                         .fill(.clear)
                         .frame(width: 320, height: 440)
                         .padding()
-                }
-            }
+                } // Button 終わり
+            } // if 文 終わり
+            
             VStack {
                 ZStack {
-                    VStack {
+                        // 日時変更
                         HStack {
                             Spacer()
                             
                             DatePicker(
-                                "",
+                                "", // ラベル
                                 selection: $memo.created_at,
-                                displayedComponents: [.hourAndMinute, .date]
+                                displayedComponents: [.hourAndMinute, .date]  // 日付と時間
                             )
-                            .environment(\.locale, Locale(identifier: "ja_JP"))
-                            .labelsHidden()
+                            .environment(\.locale, Locale(identifier: "ja_JP")) // 日本時間
+                            .labelsHidden() // ラベル非表示
                             
                             Spacer()
-                        }
-                    }
+                        } // HStack 終わり
                     VStack {
                         // 閉じるボタン
                         HStack {
-                            Spacer()
+                            Spacer() // 右寄せ
                             Button {
                                 withAnimation {
                                     focusedField = nil
