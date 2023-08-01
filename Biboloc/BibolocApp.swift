@@ -24,6 +24,9 @@ struct BibolocApp: App {
 }
 
 class Database: ObservableObject {
+    //
+    @Published var displayed_month: String = ""
+    @Published var displayed_day: String = ""
     // 表示用データ
     @Published var TagList: Array<Tag> = [Tag(name: "備忘録", used_at: Date(), deleted: false)]
     @Published var MemoList: Array<Memo> = [

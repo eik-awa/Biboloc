@@ -10,8 +10,10 @@ import SwiftUI
 struct ContentView: View {
     @ObservedObject var database: Database
     @State private var is_New = true
+    @State private var is_FavoriteMode = false
     @State private var is_Display_MemoEdit = false
     @State private var selected_memo = Memo(created_at: Date(), text: "", tag: [], favorite: false, deleted: false)
+    @State private var MemoNumber: Int = 0
     var body: some View {
         ZStack {
             // 背景
@@ -38,76 +40,21 @@ struct ContentView: View {
                     ForEach(0..<database.MemoList.count, id: \.self) {
                         num in
                         if !database.MemoList[num].deleted {
-                            if !is_SameMonth(MemoList: database.MemoList, num: num) {
-                                Text("\(ConvertYearMonth(date: database.MemoList[num].created_at))")
-                            }
-                            
-                            switch StatusDate_Prev_and_Next(MemoList: database.MemoList, num: num) {
-                            case AppConstants.CALENDAR_NOT_SAME_DATE_PREV_AND_NEXT:
-                                // テキスト
-                                MemoView_DisplayDate(
-                                    memo: $database.MemoList[num],
-                                    is_New: $is_New,
-                                    is_Display_MemoEdit: $is_Display_MemoEdit,
-                                    selected_memo: $selected_memo
-                                )
-                                .frame(width: UIScreen.main.bounds.size.width * 0.9, height: AppConstants.MEMO_HEIGHT)
-                                .cornerRadius(10)
-                                .padding(.top, 4)
-                                .padding(.bottom, 4)
-                                
-                            case AppConstants.CALENDAR_SAME_DATE_NEXT_ONLY:
-                                // テキスト
-                                MemoView_DisplayDate(
-                                    memo: $database.MemoList[num],
-                                    is_New: $is_New,
-                                    is_Display_MemoEdit: $is_Display_MemoEdit,
-                                    selected_memo: $selected_memo
-                                )
-                                .frame(width: UIScreen.main.bounds.size.width * 0.9, height: AppConstants.MEMO_HEIGHT)
-                                .mask(PartlyRoundedCornerView(
-                                    cornerRadius: 10,
-                                    maskedCorners: [.layerMinXMinYCorner, .layerMaxXMinYCorner]
-                                ))
-                                .padding(.bottom, -4)
-                                .padding(.top, 4)
-                                
-                            case AppConstants.CALENDAR_SAME_DATE_PREV_ONLY:
-                                // テキスト
-                                MemoView(
-                                    memo: $database.MemoList[num],
-                                    is_New: $is_New,
-                                    is_Display_MemoEdit: $is_Display_MemoEdit,
-                                    selected_memo: $selected_memo
-                                )
-                                .frame(width: UIScreen.main.bounds.size.width * 0.9, height: AppConstants.MEMO_HEIGHT)
-                                .mask(PartlyRoundedCornerView(
-                                    cornerRadius: 10,
-                                    maskedCorners: [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
-                                ))
-                                .padding(.top, -4)
-                                .padding(.bottom, 4)
-                                
-                            case AppConstants.CALENDAR_SAME_DATE_PREV_AND_NEXT:
-                                // テキスト
-                                MemoView(
-                                    memo: $database.MemoList[num],
-                                    is_New: $is_New,
-                                    is_Display_MemoEdit: $is_Display_MemoEdit,
-                                    selected_memo: $selected_memo
-                                )
-                                .frame(width: UIScreen.main.bounds.size.width * 0.9, height: AppConstants.MEMO_HEIGHT)
-                                .padding(.top, -4)
-                                .padding(.bottom, -4)
-                                
-                            default:
-                                Text("error")
+                            MemoSwitch(
+                                       database: database,
+                                       is_New: $is_New,
+                                       is_Display_MemoEdit: $is_Display_MemoEdit,
+                                       selected_memo: $selected_memo
+                            )
+                            .id(num)
+                            .task() {
+                                MemoNumber = num
                             }
                         }
                     }
-                        Rectangle()
-                            .fill(.clear)
-                            .frame(height: 110)
+                    Rectangle()
+                        .fill(.clear)
+                        .frame(height: 110)
                 }
                 .frame(height: UIScreen.main.bounds.size.height - 100)
                 
@@ -286,10 +233,10 @@ func ConvertTime(date: Date) -> String {
     let dateFormatter = DateFormatter()
     dateFormatter.locale = Locale(identifier: "en_US")
     dateFormatter.timeZone = TimeZone(identifier: "Asia/Tokyo")
-     
+    
     dateFormatter.calendar = Calendar(identifier: .gregorian)
     dateFormatter.dateFormat = "yyyy. M. d E HH:mm"
-     
+    
     /// データ変換
     return dateFormatter.string(from: date)
 }
