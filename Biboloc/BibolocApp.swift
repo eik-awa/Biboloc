@@ -29,7 +29,7 @@ class Database: ObservableObject {
     @Published var MemoList: Array<Memo> = [
         Memo(
             created_at: Date(),
-            text: "Biboloc チュートリアル",
+            text: AppConstants.HOW_TO_USE,
             tag: [Tag(name: "備忘録", used_at: Date())],
             favorite: false
         )
