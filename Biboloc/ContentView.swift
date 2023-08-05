@@ -13,6 +13,7 @@ struct ContentView: View {
     @State private var is_FavoriteMode = false
     @State private var is_Display_MemoEdit = false
     @State private var selected_memo = Memo(created_at: Date(), text: "", tag: [], favorite: false)
+    
     var body: some View {
         ZStack {
             // 背景
@@ -28,7 +29,7 @@ struct ContentView: View {
                     Image("logo_water")
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 100, height: 50)
+                        .frame(width: 120, height: 60)
                 }
                 .frame(height: 100)
                 
@@ -176,6 +177,8 @@ struct ContentView: View {
                 )
             }
         }
+        // 時計の非表示（Appプレビュー撮影用）
+            .statusBar(hidden: true)
     }
 }
 

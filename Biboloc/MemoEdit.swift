@@ -42,7 +42,7 @@ struct MemoEdit: View {
             })
         }, label: {
             Image(systemName: "list.bullet")
-                .foregroundColor(.black)
+                .foregroundColor(.gray)
                 .font(.system(size: 30, design: .serif))
                 .frame(width: 30,height: 30)
             
@@ -103,14 +103,18 @@ struct MemoEdit: View {
                         
                         Spacer()
                     } // HStack 終わり
-                    VStack {
-                        // メニュー
-                        HStack {
-                            Spacer() // 右寄せ
-                            menu
+                    
+                    // メニュー
+                    if !is_New {
+                        VStack {
+                            HStack {
+                                Spacer() // 右寄せ
+                                menu
+                            }
+                            Spacer()
                         }
-                        Spacer()
                     }
+                    
                 }.frame(height: 40)
                 
                 ZStack {
@@ -142,7 +146,7 @@ struct MemoEdit: View {
                                 .frame(width: 100,height: 30)
                                 .cornerRadius(15)
                                 .focused($focusedField, equals: .tag)
-                                .bold()
+                                .font(.body.bold())
                             
                             
                             if NewTag != "" {
@@ -180,7 +184,7 @@ struct MemoEdit: View {
                                         Text("# \(tag.name)")
                                             .foregroundColor(.white)
                                             .padding(10)
-                                            .bold()
+                                            .font(.body.bold())
                                             .frame(height: 30)
                                             .background(Color.BaseColor.opacity(0.7))
                                             .cornerRadius(15)
@@ -199,7 +203,7 @@ struct MemoEdit: View {
                                         Text("# \(tag.name)")
                                             .foregroundColor(.white)
                                             .padding(10)
-                                            .bold()
+                                            .font(.body.bold())
                                             .frame(height: 30)
                                             .background(Color.gray.opacity(0.4))
                                             .cornerRadius(15)
@@ -240,7 +244,7 @@ struct MemoEdit: View {
                             .foregroundColor(.white)
                             .padding(5)
                             .frame(width: 320, height: 40)
-                            .bold()
+                            .font(.body.bold())
                             .background(Color.BaseColor)
                             .cornerRadius(20)
                         
