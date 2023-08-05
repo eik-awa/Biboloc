@@ -24,21 +24,16 @@ struct BibolocApp: App {
 }
 
 class Database: ObservableObject {
-    //
-    @Published var displayed_month: String = ""
-    @Published var displayed_day: String = ""
     // 表示用データ
-    @Published var TagList: Array<Tag> = [Tag(name: "備忘録", used_at: Date(), deleted: false)]
+    @Published var TagList: Array<Tag> = [Tag(name: "備忘録", used_at: Date())]
     @Published var MemoList: Array<Memo> = [
         Memo(
             created_at: Date(),
             text: "Biboloc チュートリアル",
-            tag: [Tag(name: "備忘録", used_at: Date(), deleted: false)],
-            favorite: false,
-            deleted: false
+            tag: [Tag(name: "備忘録", used_at: Date())],
+            favorite: false
         )
     ]
-    
     
     // 内部ストレージ、表示用データを合わせる
     func mergeUserDefault() {
@@ -47,6 +42,7 @@ class Database: ObservableObject {
         let MemoData = loadMemoUserDefault()
         if (MemoData.count != 0) {
             MemoList = MemoData
+            
         } else {
             // なければ保存
             setUserDefault(object: MemoList, key: "MemoData")
@@ -79,9 +75,10 @@ class Database: ObservableObject {
     }
     
     func deleteMemo(memo: Memo) {
-        memo.deleted = true
+        if let index = MemoList.firstIndex(where: { $0.id == memo.id }) {
+            MemoList.remove(at: index)
+        }
         setUserDefault(object: MemoList, key: "MemoData")
-        
     }
     
     // Tag 更新

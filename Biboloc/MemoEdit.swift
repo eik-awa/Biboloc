@@ -13,6 +13,51 @@ struct MemoEdit: View {
         case memo
         case tag
     }
+    @State private var is_Display_deleteAlart = false
+    // メニュー
+    var menu: some View {
+        Menu(content: {
+            if memo.favorite {
+                Button(action: {
+                    memo.favorite = false
+                    database.updateMemo()
+                }, label: {
+                    Image(systemName: "star")
+                    Text("お気に入り解除")
+                })
+            } else {
+                Button(action: {
+                    memo.favorite = true
+                    database.updateMemo()
+                }, label: {
+                    Image(systemName: "star")
+                    Text("お気に入り")
+                })
+            }
+            Button(role: .destructive,action: {
+                self.is_Display_deleteAlart = true
+            }, label: {
+                Image(systemName: "trash")
+                Text("削除")
+            })
+        }, label: {
+            Image(systemName: "list.bullet")
+                .foregroundColor(.black)
+                .font(.system(size: 30, design: .serif))
+                .frame(width: 30,height: 30)
+            
+        }).alert(isPresented: $is_Display_deleteAlart) {
+            Alert(
+                title: Text("このメモを削除しますか？"),
+                primaryButton: .cancel(Text("いいえ")) {
+                    is_Display_deleteAlart = false
+                }, secondaryButton: .destructive(Text("はい")) {
+                    focusedField = nil
+                    is_Display_MemoEdit = false
+                    database.deleteMemo(memo: memo)
+                }
+            )}
+    }
     
     // 新規/編集 フラグ
     @Binding var is_New: Bool
@@ -44,34 +89,25 @@ struct MemoEdit: View {
             
             VStack {
                 ZStack {
-                        // 日時変更
-                        HStack {
-                            Spacer()
-                            
-                            DatePicker(
-                                "", // ラベル
-                                selection: $memo.created_at,
-                                displayedComponents: [.hourAndMinute, .date]  // 日付と時間
-                            )
-                            .environment(\.locale, Locale(identifier: "ja_JP")) // 日本時間
-                            .labelsHidden() // ラベル非表示
-                            
-                            Spacer()
-                        } // HStack 終わり
+                    // 日時変更
+                    HStack {
+                        Spacer()
+                        
+                        DatePicker(
+                            "", // ラベル
+                            selection: $memo.created_at,
+                            displayedComponents: [.hourAndMinute, .date]  // 日付と時間
+                        )
+                        .environment(\.locale, Locale(identifier: "ja_JP")) // 日本時間
+                        .labelsHidden() // ラベル非表示
+                        
+                        Spacer()
+                    } // HStack 終わり
                     VStack {
-                        // 閉じるボタン
+                        // メニュー
                         HStack {
                             Spacer() // 右寄せ
-                            Button {
-                                withAnimation {
-                                    focusedField = nil
-                                    is_Display_MemoEdit = false
-                                }
-                            } label: {
-                                Image(systemName: "xmark")
-                                    .foregroundColor(.black)
-                                    .font(Font.system(size: 20))
-                            }
+                            menu
                         }
                         Spacer()
                     }
@@ -90,8 +126,8 @@ struct MemoEdit: View {
                             .padding()
                     }
                 }
-                    
-                    Spacer()
+                
+                Spacer()
                 
                 
                 VStack {
@@ -108,26 +144,29 @@ struct MemoEdit: View {
                                 .focused($focusedField, equals: .tag)
                                 .bold()
                             
-                            Button(action: {
-                                if NewTag != "" {
-                                    if (IndexTag(TagList: database.TagList, name: NewTag) == -1) {
-                                        database.createTag(tag: Tag(name: NewTag, used_at: Date(), deleted: false))
-                                    } else {
-                                        database.TagList[IndexTag(TagList: database.TagList, name: NewTag)].used_at = Date()
-                                        database.updateTag()
+                            
+                            if NewTag != "" {
+                                Button(action: {
+                                    if NewTag != "" {
+                                        if (IndexTag(TagList: database.TagList, name: NewTag) == -1) {
+                                            database.createTag(tag: Tag(name: NewTag, used_at: Date()))
+                                        } else {
+                                            database.TagList[IndexTag(TagList: database.TagList, name: NewTag)].used_at = Date()
+                                            database.updateTag()
+                                        }
+                                        
+                                        if (IndexTag(TagList: memo.tag, name: NewTag) == -1) {
+                                            memo.tag.append(Tag(name: NewTag, used_at: Date()))
+                                            database.updateMemo()
+                                        }
+                                        NewTag = ""
                                     }
-                                    
-                                    if (IndexTag(TagList: memo.tag, name: NewTag) == -1) {
-                                        memo.tag.append(Tag(name: NewTag, used_at: Date(), deleted: false))
-                                        database.updateMemo()
-                                    }
-                                    NewTag = ""
+                                }) {
+                                    Image(systemName: "plus.circle.fill")
+                                        .foregroundColor(Color.MainColor)
+                                        .font(.system(size: 30, weight: .bold, design: .serif))
+                                        .frame(width: 30,height: 30)
                                 }
-                            }) {
-                                Image(systemName: "plus.circle.fill")
-                                    .foregroundColor(Color.MainColor)
-                                    .font(.system(size: 30, weight: .bold, design: .serif))
-                                    .frame(width: 30,height: 30)
                             }
                             ForEach(database.TagList, id: \.self) { tag in
                                 
@@ -172,111 +211,39 @@ struct MemoEdit: View {
                 }.frame(height: 40)
                 
                 VStack {
-                    if !is_New {
-                        HStack {
-                            Button(action: {
-                                focusedField = nil
-                                is_Display_MemoEdit = false
-                                database.deleteMemo(memo: memo)
-                            }) {
-                                Image(systemName: "trash.circle.fill")
-                                    .foregroundColor(.orange)
-                                    .font(.system(size: 30, weight: .bold, design: .serif))
-                                    .frame(width: 30, height: 30)
+                    Button(action: {
+                        focusedField = nil
+                        is_Display_MemoEdit = false
+                        if is_New {
+                            database.createMemo(
+                                memo: memo
+                            )
+                        } else {
+                            database.updateMemo()
+                        }
+                        if NewTag != "" {
+                            if (IndexTag(TagList: database.TagList, name: NewTag) == -1) {
+                                database.createTag(tag: Tag(name: NewTag, used_at: Date()))
+                            } else {
+                                database.TagList[IndexTag(TagList: database.TagList, name: NewTag)].used_at = Date()
+                                database.updateTag()
                             }
                             
-                            Button(action: {
-                                focusedField = nil
-                                is_Display_MemoEdit = false
-                                if is_New {
-                                    database.createMemo(
-                                        memo: memo
-                                    )
-                                } else {
-                                    database.updateMemo()
-                                }
-                                if NewTag != "" {
-                                    if (IndexTag(TagList: database.TagList, name: NewTag) == -1) {
-                                        database.createTag(tag: Tag(name: NewTag, used_at: Date(), deleted: false))
-                                    } else {
-                                        database.TagList[IndexTag(TagList: database.TagList, name: NewTag)].used_at = Date()
-                                        database.updateTag()
-                                    }
-                                    
-                                    if (IndexTag(TagList: memo.tag, name: NewTag) == -1) {
-                                        memo.tag.append(Tag(name: NewTag, used_at: Date(), deleted: false))
-                                        database.updateMemo()
-                                    }
-                                    NewTag = ""
-                                }
-                            }) {
-                                Text("登録")
-                                    .foregroundColor(.white)
-                                    .padding(5)
-                                    .frame(width: 240, height: 40)
-                                    .bold()
-                                    .background(Color.BaseColor)
-                                    .cornerRadius(20)
-                            }
-                            if memo.favorite {
-                                Button(action: {
-                                    memo.favorite = false
-                                    database.updateMemo()
-                                }) {
-                                    
-                                    Image(systemName: "star.circle.fill")
-                                        .foregroundColor(Color.MainColor)
-                                        .font(.system(size: 30, weight: .bold, design: .serif))
-                                        .frame(width: 30, height: 30)
-                                }
-                            } else {
-                                Button(action: {
-                                    memo.favorite = true
-                                    database.updateMemo()
-                                }) {
-                                    
-                                    Image(systemName: "star.circle.fill")
-                                        .foregroundColor(Color.gray.opacity(0.5))
-                                        .font(.system(size: 30, weight: .bold, design: .serif))
-                                        .frame(width: 30, height: 30)
-                                }
-                            }
-                        }
-                    } else {
-                        Button(action: {
-                            focusedField = nil
-                            is_Display_MemoEdit = false
-                            if is_New {
-                                database.createMemo(
-                                    memo: memo
-                                )
-                            } else {
+                            if (IndexTag(TagList: memo.tag, name: NewTag) == -1) {
+                                memo.tag.append(Tag(name: NewTag, used_at: Date()))
                                 database.updateMemo()
                             }
-                            if NewTag != "" {
-                                if (IndexTag(TagList: database.TagList, name: NewTag) == -1) {
-                                    database.createTag(tag: Tag(name: NewTag, used_at: Date(), deleted: false))
-                                } else {
-                                    database.TagList[IndexTag(TagList: database.TagList, name: NewTag)].used_at = Date()
-                                    database.updateTag()
-                                }
-                                
-                                if (IndexTag(TagList: memo.tag, name: NewTag) == -1) {
-                                    memo.tag.append(Tag(name: NewTag, used_at: Date(), deleted: false))
-                                    database.updateMemo()
-                                }
-                                NewTag = ""
-                            }
-                        }) {
-                            Text("登録")
-                                .foregroundColor(.white)
-                                .padding(5)
-                                .frame(width: 240, height: 40)
-                                .bold()
-                                .background(Color.BaseColor)
-                                .cornerRadius(20)
-                            
+                            NewTag = ""
                         }
+                    }) {
+                        Text("登録")
+                            .foregroundColor(.white)
+                            .padding(5)
+                            .frame(width: 320, height: 40)
+                            .bold()
+                            .background(Color.BaseColor)
+                            .cornerRadius(20)
+                        
                     }
                 }
                 .frame(height: 50)

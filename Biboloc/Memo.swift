@@ -14,14 +14,12 @@ class Memo: NSObject, Identifiable, NSCoding {
     var text: String
     var tag: [Tag]
     var favorite: Bool = false
-    var deleted: Bool = false
     
-    init(created_at: Date, text: String, tag: [Tag], favorite: Bool, deleted: Bool) {
+    init(created_at: Date, text: String, tag: [Tag], favorite: Bool) {
         self.created_at = created_at
         self.text = text
         self.tag = tag
         self.favorite = favorite
-        self.deleted = deleted
     }
     
     required init?(coder: NSCoder) {
@@ -29,7 +27,6 @@ class Memo: NSObject, Identifiable, NSCoding {
         text = coder.decodeObject(forKey: "text") as! String
         tag = coder.decodeObject(forKey: "tag") as! [Tag]
         favorite = coder.decodeBool(forKey: "favorite")
-        deleted = coder.decodeBool(forKey: "deleted")
     }
     
     func encode(with coder: NSCoder) {
@@ -37,6 +34,5 @@ class Memo: NSObject, Identifiable, NSCoding {
         coder.encode(text, forKey: "text")
         coder.encode(tag, forKey: "tag")
         coder.encode(favorite, forKey: "favorite")
-        coder.encode(deleted, forKey: "deleted")
     }
 }
