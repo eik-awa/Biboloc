@@ -8,10 +8,15 @@
 import SwiftUI
 
 struct ContentView: View {
+    // メモデータ
     @ObservedObject var database: Database
+    // 表示切り替え
+    @State private var display_mode = AppConstants.DISPLAY_MODE_MAIN
+    // 新規 or 編集
     @State private var is_New = true
-    @State private var is_FavoriteMode = false
+    // メモ編集（ポップアップ）の表示
     @State private var is_Display_MemoEdit = false
+    // 選択中のメモ
     @State private var selected_memo = Memo(created_at: Date(), text: "", tag: [], favorite: false)
     
     var body: some View {
@@ -35,14 +40,39 @@ struct ContentView: View {
                 
                 Spacer()
                 
-                MainView(
-                    database: database,
-                    is_New: $is_New,
-                    is_Display_MemoEdit: $is_Display_MemoEdit,
-                    selected_memo: $selected_memo
-                )
+                // 表示切り替え
+                switch display_mode {
+                case AppConstants.DISPLAY_MODE_MAIN:
+                    MainView(
+                        database: database,
+                        is_New: $is_New,
+                        is_Display_MemoEdit: $is_Display_MemoEdit,
+                        selected_memo: $selected_memo
+                    )
+                    
+                case AppConstants.DISPLAY_MODE_HASHTAG:
+                    HashTagView()
+                    
+                    
+                case AppConstants.DISPLAY_MODE_FAVORITE:
+                    FavoriteView(
+                        database: database,
+                        is_New: $is_New,
+                        is_Display_MemoEdit: $is_Display_MemoEdit,
+                        selected_memo: $selected_memo
+                    )
+                    
+                case AppConstants.DISPLAY_MODE_SETTING:
+                    SettingView()
+                default:
+                    MainView(
+                        database: database,
+                        is_New: $is_New,
+                        is_Display_MemoEdit: $is_Display_MemoEdit,
+                        selected_memo: $selected_memo
+                    )
+                }
             }
-            
             
             Rectangle()
             // ポップアップ系画面の表示中は、背景をグレーにする
@@ -56,7 +86,7 @@ struct ContentView: View {
                     UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
                 }
             
-            
+            // フッター（メニュー）
             VStack {
                 Spacer()
                 ZStack {
@@ -79,7 +109,7 @@ struct ContentView: View {
                                     Spacer()
                                     
                                     Button(action: {
-                                        
+                                        display_mode = AppConstants.DISPLAY_MODE_SETTING
                                     }) {
                                         Image(systemName: "gearshape")
                                             .foregroundColor(.gray)
@@ -88,9 +118,9 @@ struct ContentView: View {
                                     }
                                     
                                     Button(action: {
-                                        
+                                        display_mode = AppConstants.DISPLAY_MODE_MAIN
                                     }) {
-                                        Image(systemName: "star")
+                                        Image(systemName: "doc.text")
                                             .foregroundColor(.gray)
                                             .font(.system(size: 30, design: .serif))
                                             .frame(width: 30, height: 30)
@@ -101,7 +131,7 @@ struct ContentView: View {
                                         .frame(width: 30, height: 30)
                                     
                                     Button(action: {
-                                        
+                                        display_mode = AppConstants.DISPLAY_MODE_HASHTAG
                                     }) {
                                         Image(systemName: "number")
                                             .foregroundColor(.gray)
@@ -110,9 +140,9 @@ struct ContentView: View {
                                     }
                                     
                                     Button(action: {
-                                        
+                                        display_mode = AppConstants.DISPLAY_MODE_FAVORITE
                                     }) {
-                                        Image(systemName: "calendar")
+                                        Image(systemName: "star")
                                             .foregroundColor(.gray)
                                             .font(.system(size: 30, design: .serif))
                                             .frame(width: 30, height: 30)
@@ -178,7 +208,7 @@ struct ContentView: View {
             }
         }
         // 時計の非表示（Appプレビュー撮影用）
-            .statusBar(hidden: true)
+        .statusBar(hidden: true)
     }
 }
 
