@@ -6,6 +6,8 @@
 //
 
 import SwiftUI
+import UIKit
+import GoogleMobileAds
 
 struct ContentView: View {
     // メモデータ
@@ -224,6 +226,10 @@ struct MainView: View {
             ForEach(0..<database.MemoList.count, id: \.self) {
                 num in
                 if !is_SameMonth(MemoList: database.MemoList, num: num) {
+                    
+                    AdMobBannerView()
+                        .frame(width: UIScreen.main.bounds.size.width * 0.9, height: 60)
+                    
                     Text("\(ConvertYearMonth(date: database.MemoList[num].created_at))")
                 }
                 
@@ -466,5 +472,26 @@ struct PartlyRoundedCornerView: UIViewRepresentable {
     }
     
     func updateUIView(_ uiView: UIView, context: UIViewRepresentableContext<PartlyRoundedCornerView>) {
+    }
+}
+
+struct AdMobBannerView: UIViewRepresentable {
+    func makeUIView(context: Context) -> GADBannerView {
+        let banner = GADBannerView(adSize: GADAdSizeBanner)
+
+        // 本番用
+        //banner.adUnitID = "ca-app-pub-1615601076718034/4684096521"
+        // テスト用
+        banner.adUnitID = "ca-app-pub-3940256099942544/2934735716"
+        let scenes = UIApplication.shared.connectedScenes
+        let windowScene = scenes.first as? UIWindowScene
+        let window = windowScene?.windows.first
+        banner.rootViewController = window?.rootViewController
+        banner.load(GADRequest())
+        return banner
+    }
+
+    func updateUIView(_ uiView: GADBannerView, context: Context) {
+      // 特にないのでメソッドだけ用意
     }
 }

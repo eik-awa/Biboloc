@@ -50,12 +50,10 @@ enum AppConstants {
 
     
 
-    ◇お気に入り（星アイコン）（作成中）
+    ◇お気に入り（星アイコン）
     
     お気に入りのメモを
-    一覧で表示できる予定です。
-    
-    現在、作成中です。
+    一覧で表示できます。
 
 
     
@@ -70,6 +68,11 @@ enum AppConstants {
     
     
     """
+    
+    static let DISPLAY_MODE_MAIN = 0
+    static let DISPLAY_MODE_FAVORITE = 1
+    static let DISPLAY_MODE_HASHTAG = 2
+    static let DISPLAY_MODE_SETTING = 3
     
     static let CALENDAR_NOT_SAME_DATE_PREV_AND_NEXT = 0
     static let CALENDAR_SAME_DATE_PREV_ONLY = 1

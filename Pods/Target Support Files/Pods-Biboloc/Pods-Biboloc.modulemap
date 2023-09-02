@@ -1,0 +1,6 @@
+framework module Pods_Biboloc {
+  umbrella header "Pods-Biboloc-umbrella.h"
+
+  export *
+  module * { export * }
+}

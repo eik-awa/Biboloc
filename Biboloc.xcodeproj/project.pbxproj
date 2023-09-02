@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1F7EA1CF4310793560D23286 /* Pods_Biboloc.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 580BDE4FE3F09763A3FCA05B /* Pods_Biboloc.framework */; };
 		C548D8442A6ACB6D005CDBFC /* Memo.swift in Sources */ = {isa = PBXBuildFile; fileRef = C548D8432A6ACB6D005CDBFC /* Memo.swift */; };
 		C548D8462A6ACDA5005CDBFC /* Tag.swift in Sources */ = {isa = PBXBuildFile; fileRef = C548D8452A6ACDA5005CDBFC /* Tag.swift */; };
 		C548D8482A6B09EA005CDBFC /* MemoEdit.swift in Sources */ = {isa = PBXBuildFile; fileRef = C548D8472A6B09EA005CDBFC /* MemoEdit.swift */; };
@@ -16,9 +17,14 @@
 		C57331AA2A6AC07700626D03 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C57331A92A6AC07700626D03 /* Preview Assets.xcassets */; };
 		C591CACC2A6FFCFC0063D751 /* MemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C591CACB2A6FFCFC0063D751 /* MemoView.swift */; };
 		C591CACE2A7000260063D751 /* AppConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = C591CACD2A7000260063D751 /* AppConstants.swift */; };
+		C5D5A1C22AA2F560006F27A5 /* HashTagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5D5A1C12AA2F560006F27A5 /* HashTagView.swift */; };
+		C5D5A1C42AA2F570006F27A5 /* FavoriteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5D5A1C32AA2F570006F27A5 /* FavoriteView.swift */; };
+		C5D5A1C62AA2F57D006F27A5 /* SettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5D5A1C52AA2F57D006F27A5 /* SettingView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		580BDE4FE3F09763A3FCA05B /* Pods_Biboloc.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Biboloc.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		7B1CF71E27A51566BD068D0D /* Pods-Biboloc.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Biboloc.debug.xcconfig"; path = "Target Support Files/Pods-Biboloc/Pods-Biboloc.debug.xcconfig"; sourceTree = "<group>"; };
 		C548D8432A6ACB6D005CDBFC /* Memo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Memo.swift; sourceTree = "<group>"; };
 		C548D8452A6ACDA5005CDBFC /* Tag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tag.swift; sourceTree = "<group>"; };
 		C548D8472A6B09EA005CDBFC /* MemoEdit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoEdit.swift; sourceTree = "<group>"; };
@@ -30,6 +36,10 @@
 		C591CACB2A6FFCFC0063D751 /* MemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoView.swift; sourceTree = "<group>"; };
 		C591CACD2A7000260063D751 /* AppConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConstants.swift; sourceTree = "<group>"; };
 		C5C67D172A7EBE25009B767A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		C5D5A1C12AA2F560006F27A5 /* HashTagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashTagView.swift; sourceTree = "<group>"; };
+		C5D5A1C32AA2F570006F27A5 /* FavoriteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteView.swift; sourceTree = "<group>"; };
+		C5D5A1C52AA2F57D006F27A5 /* SettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingView.swift; sourceTree = "<group>"; };
+		FAA096E273C9E27EA0D64E21 /* Pods-Biboloc.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Biboloc.release.xcconfig"; path = "Target Support Files/Pods-Biboloc/Pods-Biboloc.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -37,17 +47,28 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1F7EA1CF4310793560D23286 /* Pods_Biboloc.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		761B051965439D4E76A44877 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				580BDE4FE3F09763A3FCA05B /* Pods_Biboloc.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		C57331962A6AC07300626D03 = {
 			isa = PBXGroup;
 			children = (
 				C57331A12A6AC07300626D03 /* Biboloc */,
 				C57331A02A6AC07300626D03 /* Products */,
+				F4752D598C7E751E8CF0DE0F /* Pods */,
+				761B051965439D4E76A44877 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -66,6 +87,9 @@
 				C57331A22A6AC07300626D03 /* BibolocApp.swift */,
 				C57331A42A6AC07300626D03 /* ContentView.swift */,
 				C548D8472A6B09EA005CDBFC /* MemoEdit.swift */,
+				C5D5A1C12AA2F560006F27A5 /* HashTagView.swift */,
+				C5D5A1C52AA2F57D006F27A5 /* SettingView.swift */,
+				C5D5A1C32AA2F570006F27A5 /* FavoriteView.swift */,
 				C591CACD2A7000260063D751 /* AppConstants.swift */,
 				C591CACB2A6FFCFC0063D751 /* MemoView.swift */,
 				C548D8432A6ACB6D005CDBFC /* Memo.swift */,
@@ -84,6 +108,16 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
+		F4752D598C7E751E8CF0DE0F /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				7B1CF71E27A51566BD068D0D /* Pods-Biboloc.debug.xcconfig */,
+				FAA096E273C9E27EA0D64E21 /* Pods-Biboloc.release.xcconfig */,
+			);
+			name = Pods;
+			path = Pods;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -91,9 +125,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = C57331AD2A6AC07700626D03 /* Build configuration list for PBXNativeTarget "Biboloc" */;
 			buildPhases = (
+				50A731A0E572AB13820F738D /* [CP] Check Pods Manifest.lock */,
 				C573319B2A6AC07300626D03 /* Sources */,
 				C573319C2A6AC07300626D03 /* Frameworks */,
 				C573319D2A6AC07300626D03 /* Resources */,
+				10B424A85A4656E07D55F50C /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -149,18 +185,63 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		10B424A85A4656E07D55F50C /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Biboloc/Pods-Biboloc-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Biboloc/Pods-Biboloc-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Biboloc/Pods-Biboloc-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		50A731A0E572AB13820F738D /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Biboloc-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		C573319B2A6AC07300626D03 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				C591CACC2A6FFCFC0063D751 /* MemoView.swift in Sources */,
+				C5D5A1C62AA2F57D006F27A5 /* SettingView.swift in Sources */,
 				C548D8482A6B09EA005CDBFC /* MemoEdit.swift in Sources */,
 				C548D8462A6ACDA5005CDBFC /* Tag.swift in Sources */,
 				C591CACE2A7000260063D751 /* AppConstants.swift in Sources */,
 				C548D8442A6ACB6D005CDBFC /* Memo.swift in Sources */,
 				C57331A52A6AC07300626D03 /* ContentView.swift in Sources */,
 				C57331A32A6AC07300626D03 /* BibolocApp.swift in Sources */,
+				C5D5A1C42AA2F570006F27A5 /* FavoriteView.swift in Sources */,
+				C5D5A1C22AA2F560006F27A5 /* HashTagView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -283,6 +364,7 @@
 		};
 		C57331AE2A6AC07700626D03 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7B1CF71E27A51566BD068D0D /* Pods-Biboloc.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -316,6 +398,7 @@
 		};
 		C57331AF2A6AC07700626D03 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = FAA096E273C9E27EA0D64E21 /* Pods-Biboloc.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
