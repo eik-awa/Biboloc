@@ -491,9 +491,9 @@ struct AdMobBannerView: UIViewRepresentable {
         let banner = GADBannerView(adSize: GADAdSizeBanner)
         
         // 本番用
-        //banner.adUnitID = "ca-app-pub-1615601076718034/4684096521"
+        banner.adUnitID = "ca-app-pub-1615601076718034/4684096521"
         // テスト用
-        banner.adUnitID = "ca-app-pub-3940256099942544/2934735716"
+        //banner.adUnitID = "ca-app-pub-3940256099942544/2934735716"
         let scenes = UIApplication.shared.connectedScenes
         let windowScene = scenes.first as? UIWindowScene
         let window = windowScene?.windows.first
