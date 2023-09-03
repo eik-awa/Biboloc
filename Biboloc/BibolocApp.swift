@@ -20,7 +20,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 @main
 struct BibolocApp: App {
-    @StateObject var database = Database()
+    @StateObject var database = Database()// 画面上部の余白
+    
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     
     var body: some Scene {

@@ -132,7 +132,7 @@ struct MemoEdit: View {
                 }
                 
                 Spacer()
-                
+
                 
                 VStack {
                     ScrollView (.horizontal, showsIndicators: false){
@@ -253,7 +253,9 @@ struct MemoEdit: View {
                 .frame(height: 50)
                 
             }
-            .frame(width: 320, height: 440)
+            .frame(
+                width: UIScreen.main.bounds.size.width * 0.8,
+                height: (focusedField == nil) ? UIScreen.main.bounds.size.height * 0.5 : UIScreen.main.bounds.size.height * 0.4)
             .padding()
             .scaledToFit()
             .background(.white)

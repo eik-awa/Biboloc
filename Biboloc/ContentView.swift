@@ -21,7 +21,10 @@ struct ContentView: View {
     // 選択中のメモ
     @State private var selected_memo = Memo(created_at: Date(), text: "", tag: [], favorite: false)
     
+    @State var topPadding = UIApplication.shared.windows.first?.safeAreaInsets.top
+    
     var body: some View {
+
         ZStack {
             // 背景
             Rectangle()
@@ -29,51 +32,63 @@ struct ContentView: View {
                 .ignoresSafeArea()
             
             VStack {
-                // ヘッダー
                 VStack {
                     Spacer()
+                        .frame(height: topPadding)
                     
                     Image("logo_water")
                         .resizable()
                         .scaledToFit()
                         .frame(width: 120, height: 60)
                 }
-                .frame(height: 100)
+                .frame(height: AppConstants.HEADER_HEIGHT)
+                .ignoresSafeArea(edges: [.bottom])
                 
                 Spacer()
                 
-                // 表示切り替え
-                switch display_mode {
-                case AppConstants.DISPLAY_MODE_MAIN:
-                    MainView(
-                        database: database,
-                        is_New: $is_New,
-                        is_Display_MemoEdit: $is_Display_MemoEdit,
-                        selected_memo: $selected_memo
-                    )
-                    
-                case AppConstants.DISPLAY_MODE_HASHTAG:
-                    HashTagView()
-                    
-                    
-                case AppConstants.DISPLAY_MODE_FAVORITE:
-                    FavoriteView(
-                        database: database,
-                        is_New: $is_New,
-                        is_Display_MemoEdit: $is_Display_MemoEdit,
-                        selected_memo: $selected_memo
-                    )
-                    
-                case AppConstants.DISPLAY_MODE_SETTING:
-                    SettingView()
-                default:
-                    MainView(
-                        database: database,
-                        is_New: $is_New,
-                        is_Display_MemoEdit: $is_Display_MemoEdit,
-                        selected_memo: $selected_memo
-                    )
+                VStack {
+                    // 表示切り替え
+                    switch display_mode {
+                    case AppConstants.DISPLAY_MODE_MAIN:
+                        MainView(
+                            database: database,
+                            is_New: $is_New,
+                            is_Display_MemoEdit: $is_Display_MemoEdit,
+                            selected_memo: $selected_memo
+                        )
+                        
+                    case AppConstants.DISPLAY_MODE_HASHTAG:
+                        HashTagView(
+                            database: database,
+                            is_New: $is_New,
+                            is_Display_MemoEdit: $is_Display_MemoEdit,
+                            selected_memo: $selected_memo
+                        )
+                        
+                        
+                    case AppConstants.DISPLAY_MODE_FAVORITE:
+                        FavoriteView(
+                            database: database,
+                            is_New: $is_New,
+                            is_Display_MemoEdit: $is_Display_MemoEdit,
+                            selected_memo: $selected_memo
+                        )
+                        
+                    case AppConstants.DISPLAY_MODE_SETTING:
+                        SettingView()
+                    default:
+                        MainView(
+                            database: database,
+                            is_New: $is_New,
+                            is_Display_MemoEdit: $is_Display_MemoEdit,
+                            selected_memo: $selected_memo
+                        )
+                    }
                 }
+                
+                .frame(height: UIScreen.main.bounds.size.height - AppConstants.HEADER_HEIGHT + 10)
+                
+                Spacer()
             }
             
             Rectangle()
@@ -100,8 +115,11 @@ struct ContentView: View {
                                 .fill(Color.white)
                                 .frame(width: UIScreen.main.bounds.size.width)
                                 .edgesIgnoringSafeArea(.all)
-                                .cornerRadius(40)
                                 .frame(height: 100)
+                                .mask(PartlyRoundedCornerView(
+                                    cornerRadius: 40,
+                                    maskedCorners: [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+                                ))
                             
                             VStack {
                                 
@@ -197,7 +215,7 @@ struct ContentView: View {
                         }
                     }
                 }
-                .frame(height: 130)
+                .frame(height: AppConstants.FOOTER_HEIGHT)
                 .edgesIgnoringSafeArea(.all)
             }
             .popup(isPresented: $is_Display_MemoEdit){
@@ -226,9 +244,6 @@ struct MainView: View {
             ForEach(0..<database.MemoList.count, id: \.self) {
                 num in
                 if !is_SameMonth(MemoList: database.MemoList, num: num) {
-                    
-                    AdMobBannerView()
-                        .frame(width: UIScreen.main.bounds.size.width * 0.9, height: 60)
                     
                     Text("\(ConvertYearMonth(date: database.MemoList[num].created_at))")
                 }
@@ -297,12 +312,8 @@ struct MainView: View {
             }
             Rectangle()
                 .fill(.clear)
-                .frame(height: 110)
+                .frame(height: AppConstants.FOOTER_HEIGHT)
         }
-        .frame(height: UIScreen.main.bounds.size.height - 100)
-        
-        Spacer()
-        
     }
 }
 
@@ -478,7 +489,7 @@ struct PartlyRoundedCornerView: UIViewRepresentable {
 struct AdMobBannerView: UIViewRepresentable {
     func makeUIView(context: Context) -> GADBannerView {
         let banner = GADBannerView(adSize: GADAdSizeBanner)
-
+        
         // 本番用
         //banner.adUnitID = "ca-app-pub-1615601076718034/4684096521"
         // テスト用
@@ -490,8 +501,8 @@ struct AdMobBannerView: UIViewRepresentable {
         banner.load(GADRequest())
         return banner
     }
-
+    
     func updateUIView(_ uiView: GADBannerView, context: Context) {
-      // 特にないのでメソッドだけ用意
+        // 特にないのでメソッドだけ用意
     }
 }
