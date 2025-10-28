@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <strong>忘れっぽいけど管理が面倒な人へ。</strong>
+  <strong>忘れっぽいけど、管理が面倒な人へ。</strong>
 </p>
 
 <p align="center">
