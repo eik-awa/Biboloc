@@ -7,7 +7,9 @@
 
 import SwiftUI
 import UIKit
+#if canImport(GoogleMobileAds)
 import GoogleMobileAds
+#endif
 
 struct ContentView: View {
     // メモデータ
@@ -20,10 +22,13 @@ struct ContentView: View {
     @State private var is_Display_MemoEdit = false
     // 選択中のメモ
     @State private var selected_memo = Memo(created_at: Date(), text: "", tag: [], favorite: false)
+    // 新規作成中の下書き
+    @State private var draftMemo: Memo?
     
     @State var topPadding = UIApplication.shared.windows.first?.safeAreaInsets.top
     
     var body: some View {
+        
 
         ZStack {
             // 背景
@@ -75,7 +80,7 @@ struct ContentView: View {
                         )
                         
                     case AppConstants.DISPLAY_MODE_SETTING:
-                        SettingView()
+                        SettingView(database: database)
                     default:
                         MainView(
                             database: database,
@@ -98,6 +103,10 @@ struct ContentView: View {
             
             // タップすると、ポップアップが消える
                 .onTapGesture {
+                    // 新規作成中の場合、入力内容を下書きとして保持
+                    if is_New && is_Display_MemoEdit && (!selected_memo.text.isEmpty || !selected_memo.tag.isEmpty) {
+                        draftMemo = selected_memo
+                    }
                     is_Display_MemoEdit = false
                     // キーボードを非表示に
                     UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
@@ -198,12 +207,17 @@ struct ContentView: View {
                         
                         VStack{
                             Button(action: {
-                                selected_memo = Memo(
-                                    created_at: Date(),
-                                    text: "",
-                                    tag: [],
-                                    favorite: false
-                                )
+                                if let draft = draftMemo {
+                                    // 下書きがあれば復元
+                                    selected_memo = draft
+                                } else {
+                                    selected_memo = Memo(
+                                        created_at: Date(),
+                                        text: "",
+                                        tag: [],
+                                        favorite: false
+                                    )
+                                }
                                 is_New = true
                                 is_Display_MemoEdit = true
                             }) {
@@ -223,7 +237,8 @@ struct ContentView: View {
                     is_New: $is_New,
                     is_Display_MemoEdit: $is_Display_MemoEdit,
                     memo: $selected_memo,
-                    database: database
+                    database: database,
+                    draftMemo: $draftMemo
                 )
             }
         }
@@ -452,18 +467,21 @@ extension Color {
 // ポップアップの表示設定
 extension View {
     
-    func popup<Content: View>(isPresented: Binding<Bool>, content: () -> Content) -> some View {
-        
-        if isPresented.wrappedValue {
-        }
+    func popup<Content: View>(isPresented: Binding<Bool>, content: @escaping () -> Content) -> some View {
         
         return ZStack {
             self
             
-            content()
-                .opacity(isPresented.wrappedValue ? 1 : 0)
-                .scaleEffect(isPresented.wrappedValue ? 1 : 0.001)
-                .animation(.easeIn(duration: 0.2), value: isPresented.wrappedValue)
+            GeometryReader { geometry in
+                content()
+                    .scaleEffect(isPresented.wrappedValue ? 1 : 0.001)
+                    .position(
+                        x: geometry.size.width / 2,
+                        y: UIScreen.main.bounds.midY - geometry.frame(in: .global).minY
+                    )
+            }
+            .opacity(isPresented.wrappedValue ? 1 : 0)
+            .animation(.easeIn(duration: 0.2), value: isPresented.wrappedValue)
         }
     }
 }
@@ -486,6 +504,7 @@ struct PartlyRoundedCornerView: UIViewRepresentable {
     }
 }
 
+#if canImport(GoogleMobileAds)
 struct AdMobBannerView: UIViewRepresentable {
     func makeUIView(context: Context) -> GADBannerView {
         let banner = GADBannerView(adSize: GADAdSizeBanner)
@@ -506,3 +525,11 @@ struct AdMobBannerView: UIViewRepresentable {
         // 特にないのでメソッドだけ用意
     }
 }
+#else
+struct AdMobBannerView: View {
+    var body: some View {
+        Rectangle()
+            .fill(Color.clear)
+    }
+}
+#endif

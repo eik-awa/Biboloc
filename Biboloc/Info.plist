@@ -2,12 +2,16 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>GADApplicationIdentifier</key>
-	<string>ca-app-pub-1615601076718034~8611695257</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+	<key>CFBundleIdentifier</key>
+	<string>ITSAppUsesNonExemptEncryption</string>
+	<key>GADApplicationIdentifier</key>
+	<string>ca-app-pub-1615601076718034~8611695257</string>
 	<key>SKAdNetworkIdentifier</key>
 	<string>cstr6suwn9.skadnetwork</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>メモを保護するためにFace IDを使用します。</string>
 	<key>Scene Configuration</key>
 	<string></string>
 </dict>

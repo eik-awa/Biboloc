@@ -54,6 +54,7 @@ struct MemoEdit: View {
                 }, secondaryButton: .destructive(Text("はい")) {
                     focusedField = nil
                     is_Display_MemoEdit = false
+                    draftMemo = nil
                     database.deleteMemo(memo: memo)
                 }
             )}
@@ -67,14 +68,41 @@ struct MemoEdit: View {
     @Binding var memo: Memo
     // メモ、タグデータ
     @ObservedObject var database: Database
+    // 新規作成中の下書き
+    @Binding var draftMemo: Memo?
     // キーボードの表示制御
     @FocusState var focusedField: Field?
+    // キーボードの高さ監視
+    @StateObject private var keyboard = KeyboardObserver()
     // タグのテキストフィールド
     @State private var NewTag = ""
+    // 自動保存タイマー
+    @State private var autoSaveTimer: Timer?
+    // 自動保存設定
+    @AppStorage("autoSaveEnabled") private var autoSaveEnabled = false
+    
+    // Dynamic Island等を考慮した上端の安全領域
+    private var safeAreaTop: CGFloat {
+        UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .first?.windows.first?.safeAreaInsets.top ?? 59
+    }
+    
+    private let keyboardTopMargin: CGFloat = 40
+    
+    // キーボード表示時のポップアップ高さ
+    private var popupHeight: CGFloat {
+        let screenHeight = UIScreen.main.bounds.height
+        
+        if keyboard.isShowing {
+            return screenHeight - keyboard.height - safeAreaTop - 60
+        } else {
+            return screenHeight * 0.5
+        }
+    }
     
     var body: some View {
-        ZStack {
-            
+        ZStack(alignment: .center) {
             // メモ編集画面内をクリックするとキーボードを非表示にする
             if (focusedField != nil) {
                 Button(action: {
@@ -82,58 +110,70 @@ struct MemoEdit: View {
                 }) {
                     Rectangle()
                         .fill(.clear)
-                        .frame(width: 320, height: 440)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .padding()
                 } // Button 終わり
             } // if 文 終わり
             
-            VStack {
-                ZStack {
-                    // 日時変更
-                    HStack {
-                        Spacer()
-                        
-                        DatePicker(
-                            "", // ラベル
-                            selection: $memo.created_at,
-                            displayedComponents: [.hourAndMinute, .date]  // 日付と時間
-                        )
-                        .environment(\.locale, Locale(identifier: "ja_JP")) // 日本時間
-                        .labelsHidden() // ラベル非表示
-                        
-                        Spacer()
-                    } // HStack 終わり
-                    
-                    // メニュー
-                    if !is_New {
-                        VStack {
-                            HStack {
-                                Spacer() // 右寄せ
-                                menu
-                            }
+            VStack(spacing: 0) {
+                Spacer()
+                if !keyboard.isShowing {
+                    ZStack {
+                        // 日時変更
+                        HStack {
+                            Spacer()
+                            
+                            DatePicker(
+                                "", // ラベル
+                                selection: $memo.created_at,
+                                displayedComponents: [.hourAndMinute, .date]  // 日付と時間
+                            )
+                            .environment(\.locale, Locale(identifier: "ja_JP")) // 日本時間
+                            .environment(\.sizeCategory, .medium)
+                            .datePickerStyle(.compact)
+                            .labelsHidden() // ラベル非表示
+                            .fixedSize(horizontal: true, vertical: false)
                             Spacer()
                         }
+                        
+                        // メニュー
+                        if !is_New {
+                            VStack {
+                                HStack {
+                                    Spacer() // 右寄せ
+                                    menu
+                                }
+                                Spacer()
+                            }
+                        }
+                        
+                    }.frame(height: 40)
+                }
+                
+                ZStack(alignment: .topLeading) {
+                    if #available(iOS 16.0, *) {
+                        TextEditor(text: $memo.text)
+                            .focused($focusedField, equals: .memo)
+                            .scrollContentBackground(.hidden)
+                    } else {
+                        TextEditor(text: $memo.text)
+                            .focused($focusedField, equals: .memo)
                     }
                     
-                }.frame(height: 40)
-                
-                ZStack {
-                    TextEditor(text: $memo.text)
-                        .focused($focusedField, equals: .memo)
-                    
-                    
-                    Button(action: {
-                        focusedField = nil
-                    }) {
-                        Rectangle()
-                            .fill(.clear)
-                            .padding()
+                    // キーボード表示中のみ透明ボタンを重ねて、タップで解除
+                    // 解除後はボタンが消えるので、再タップでTextEditorにフォーカスが戻る
+                    if focusedField != nil {
+                        Button(action: {
+                            focusedField = nil
+                        }) {
+                            Rectangle()
+                                .fill(.clear)
+                                .padding()
+                        }
                     }
                 }
                 
-                Spacer()
-
-                
+                if !keyboard.isShowing || focusedField == .tag {
                 VStack {
                     ScrollView (.horizontal, showsIndicators: false){
                         HStack {
@@ -213,11 +253,15 @@ struct MemoEdit: View {
                         }
                     }
                 }.frame(height: 40)
+                }
                 
+                if !keyboard.isShowing {
                 VStack {
                     Button(action: {
                         focusedField = nil
                         is_Display_MemoEdit = false
+                        // 下書きをクリア
+                        draftMemo = nil
                         if is_New {
                             database.createMemo(
                                 memo: memo
@@ -251,15 +295,51 @@ struct MemoEdit: View {
                     }
                 }
                 .frame(height: 50)
+                } // if !keyboard.isShowing 終わり
                 
             }
             .frame(
                 width: UIScreen.main.bounds.size.width * 0.8,
-                height: (focusedField == nil) ? UIScreen.main.bounds.size.height * 0.5 : UIScreen.main.bounds.size.height * 0.4)
-            .padding()
-            .scaledToFit()
+                height: popupHeight
+            )
+            .padding(.horizontal, 16)
+            .padding(.top, 16)
+            .padding(.bottom, 16)
             .background(.white)
+            .cornerRadius(10)
+            .padding(.bottom, keyboard.isShowing ? keyboard.height - 30 : 16)
+            .animation(.easeOut(duration: 0.2), value: keyboard.height)
+            .onAppear {
+                keyboard.addObserver()
+                startAutoSaveIfNeeded()
+            }
+            .onChange(of: is_Display_MemoEdit) { newValue in
+                if newValue && is_New {
+                    focusedField = .memo
+                }
+            }
+            .onDisappear {
+                keyboard.removeObserver()
+                stopAutoSave()
+            }
         }
+    }
+    
+    private func startAutoSaveIfNeeded() {
+        guard autoSaveEnabled else { return }
+        autoSaveTimer = Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { _ in
+            if is_New {
+                database.createMemo(memo: memo)
+                is_New = false
+            } else {
+                database.updateMemo()
+            }
+        }
+    }
+    
+    private func stopAutoSave() {
+        autoSaveTimer?.invalidate()
+        autoSaveTimer = nil
     }
 }
 

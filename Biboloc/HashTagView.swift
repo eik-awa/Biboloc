@@ -13,6 +13,8 @@ struct HashTagView: View {
     @Binding var is_Display_MemoEdit: Bool
     @Binding var selected_memo: Memo
     @State var text: String = ""
+    @State var tagToDelete: Tag? = nil
+    @State var is_Display_deleteTagAlert = false
     @ObservedObject var keyboard: KeyboardObserver = KeyboardObserver()
     
     // テキストフィールドを制御
@@ -86,6 +88,14 @@ struct HashTagView: View {
                                     .background(Color.BaseColor.opacity(0.7))
                                     .cornerRadius(15)
                             }
+                            .contextMenu {
+                                Button(role: .destructive, action: {
+                                    tagToDelete = tag
+                                    is_Display_deleteTagAlert = true
+                                }) {
+                                    Label("削除", systemImage: "trash")
+                                }
+                            }
                         }
                         .frame(width: UIScreen.main.bounds.size.width * 0.9)
                         .padding()
@@ -157,6 +167,21 @@ struct HashTagView: View {
                         .frame(width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.height)
                 } // Button 終わり
             }
+        }
+        .alert(isPresented: $is_Display_deleteTagAlert) {
+            Alert(
+                title: Text("このタグを削除しますか？"),
+                message: Text("タグ一覧から削除されます。\nメモに付けたタグはそのまま残ります。"),
+                primaryButton: .cancel(Text("いいえ")) {
+                    tagToDelete = nil
+                },
+                secondaryButton: .destructive(Text("はい")) {
+                    if let tag = tagToDelete {
+                        database.deleteTag(tag: tag)
+                    }
+                    tagToDelete = nil
+                }
+            )
         }
     }
 }
