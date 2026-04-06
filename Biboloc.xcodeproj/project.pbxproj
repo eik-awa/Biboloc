@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B2F68DD4A51B2B78DAA913A2 /* Pods_Biboloc.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 580BDE4FE3F09763A3FCA05B /* Pods_Biboloc.framework */; };
 		C25034B12F81EBB90061A195 /* TrashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C25034B02F81EBB90061A195 /* TrashView.swift */; };
 		C25034B32F81EBF50061A195 /* KeychainHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = C25034B22F81EBF50061A195 /* KeychainHelper.swift */; };
 		C25034B52F81EC130061A195 /* LockScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C25034B42F81EC130061A195 /* LockScreenView.swift */; };
@@ -52,6 +53,17 @@
 		C5D5A1C52AA2F57D006F27A5 /* SettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingView.swift; sourceTree = "<group>"; };
 		FAA096E273C9E27EA0D64E21 /* Pods-Biboloc.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Biboloc.release.xcconfig"; path = "Target Support Files/Pods-Biboloc/Pods-Biboloc.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		E53F20A8E3B5EC05B3CE6B97 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B2F68DD4A51B2B78DAA913A2 /* Pods_Biboloc.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		761B051965439D4E76A44877 /* Frameworks */ = {
@@ -130,8 +142,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = C57331AD2A6AC07700626D03 /* Build configuration list for PBXNativeTarget "Biboloc" */;
 			buildPhases = (
+				8794EE28CE473C9B2F5E536D /* [CP] Check Pods Manifest.lock */,
 				C573319B2A6AC07300626D03 /* Sources */,
 				C573319D2A6AC07300626D03 /* Resources */,
+				E53F20A8E3B5EC05B3CE6B97 /* Frameworks */,
+				7943293DC2EC1EADCE43ABEA /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -189,6 +204,52 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		7943293DC2EC1EADCE43ABEA /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Biboloc/Pods-Biboloc-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Biboloc/Pods-Biboloc-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Biboloc/Pods-Biboloc-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		8794EE28CE473C9B2F5E536D /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Biboloc-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		C573319B2A6AC07300626D03 /* Sources */ = {
@@ -357,7 +418,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2;
+				MARKETING_VERSION = 1.3;
 				PRODUCT_BUNDLE_IDENTIFIER = eiki.ogawa.Biboloc;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -392,7 +453,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2;
+				MARKETING_VERSION = 1.3;
 				PRODUCT_BUNDLE_IDENTIFIER = eiki.ogawa.Biboloc;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;

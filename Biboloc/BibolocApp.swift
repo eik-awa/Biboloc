@@ -216,7 +216,7 @@ class Database: ObservableObject {
         guard let data = UserDefaults.standard.data(forKey: "MemoData") else {
             return []
         }
-        guard let array = try? NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(data) as? [Memo]
+        guard let array = try? NSKeyedUnarchiver.unarchivedObject(ofClasses: [NSArray.self, Memo.self, Tag.self, NSString.self, NSDate.self, NSUUID.self, NSNumber.self], from: data) as? [Memo]
         else {
             return []
         }
@@ -227,7 +227,7 @@ class Database: ObservableObject {
         guard let data = UserDefaults.standard.data(forKey: "DeletedMemoData") else {
             return []
         }
-        guard let array = try? NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(data) as? [Memo]
+        guard let array = try? NSKeyedUnarchiver.unarchivedObject(ofClasses: [NSArray.self, Memo.self, Tag.self, NSString.self, NSDate.self, NSUUID.self, NSNumber.self], from: data) as? [Memo]
         else {
             return []
         }
@@ -238,7 +238,7 @@ class Database: ObservableObject {
         guard let data = UserDefaults.standard.data(forKey: "TagData") else {
             return []
         }
-        guard let array = try? NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(data) as? [Tag]
+        guard let array = try? NSKeyedUnarchiver.unarchivedObject(ofClasses: [NSArray.self, Tag.self, NSString.self, NSDate.self, NSUUID.self], from: data) as? [Tag]
         else {
             return []
         }

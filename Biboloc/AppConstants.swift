@@ -67,6 +67,6 @@ enum AppConstants {
     static let CALENDAR_SAME_DATE_PREV_AND_NEXT = 3
     
     static let MEMO_HEIGHT: CGFloat = 100
-    static let HEADER_HEIGHT: CGFloat = 50 + (UIApplication.shared.windows.first?.safeAreaInsets.top ?? 0)
+    static let HEADER_HEIGHT: CGFloat = 50 + ((UIApplication.shared.connectedScenes.first as? UIWindowScene)?.windows.first?.safeAreaInsets.top ?? 0)
     static let FOOTER_HEIGHT: CGFloat = 130
 }

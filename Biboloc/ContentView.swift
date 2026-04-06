@@ -25,7 +25,7 @@ struct ContentView: View {
     // 新規作成中の下書き
     @State private var draftMemo: Memo?
     
-    @State var topPadding = UIApplication.shared.windows.first?.safeAreaInsets.top
+    @State var topPadding = (UIApplication.shared.connectedScenes.first as? UIWindowScene)?.windows.first?.safeAreaInsets.top
     
     var body: some View {
         
