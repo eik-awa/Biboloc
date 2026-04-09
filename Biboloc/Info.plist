@@ -12,6 +12,10 @@
 	<string>cstr6suwn9.skadnetwork</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>メモを保護するためにFace IDを使用します。</string>
+	<key>UIFileSharingEnabled</key>
+	<true/>
+	<key>LSSupportsOpeningDocumentsInPlace</key>
+	<true/>
 	<key>Scene Configuration</key>
 	<string></string>
 </dict>

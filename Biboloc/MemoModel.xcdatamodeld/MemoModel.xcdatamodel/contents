@@ -1,2 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="21513" systemVersion="21G72" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier=""/>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="21513" systemVersion="21G72" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="MemoEntity" representedClassName="MemoEntity" syncable="YES" codeGenerationType="none">
+        <attribute name="created_at" optional="NO" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="favorite" optional="NO" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="id" optional="NO" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="isInTrash" optional="NO" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="text" optional="NO" attributeType="String" defaultValueString=""/>
+        <relationship name="tags" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TagEntity" inverseName="memos" inverseEntity="TagEntity"/>
+    </entity>
+    <entity name="TagEntity" representedClassName="TagEntity" syncable="YES" codeGenerationType="none">
+        <attribute name="id" optional="NO" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="name" optional="NO" attributeType="String" defaultValueString=""/>
+        <attribute name="used_at" optional="NO" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="memos" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="MemoEntity" inverseName="tags" inverseEntity="MemoEntity"/>
+    </entity>
+</model>

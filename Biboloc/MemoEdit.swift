@@ -328,6 +328,7 @@ struct MemoEdit: View {
     private func startAutoSaveIfNeeded() {
         guard autoSaveEnabled else { return }
         autoSaveTimer = Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { _ in
+            guard !memo.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
             if is_New {
                 database.createMemo(memo: memo)
                 is_New = false
