@@ -210,6 +210,8 @@ struct ContentView: View {
                                 if let draft = draftMemo {
                                     // 下書きがあれば復元
                                     selected_memo = draft
+                                    // 自動保存で既に登録済みの下書きは新規扱いしない（重複登録防止）
+                                    is_New = !database.MemoList.contains { $0.id == draft.id }
                                 } else {
                                     selected_memo = Memo(
                                         created_at: Date(),
@@ -217,8 +219,8 @@ struct ContentView: View {
                                         tag: [],
                                         favorite: false
                                     )
+                                    is_New = true
                                 }
-                                is_New = true
                                 is_Display_MemoEdit = true
                             }) {
                                 Circle()

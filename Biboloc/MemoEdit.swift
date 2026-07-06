@@ -78,6 +78,8 @@ struct MemoEdit: View {
     @State private var NewTag = ""
     // 自動保存タイマー
     @State private var autoSaveTimer: Timer?
+    // 直近で自動保存したテキスト（変更がない場合は再保存しないため）
+    @State private var lastAutoSavedText: String = ""
     // 自動保存設定
     @AppStorage("autoSaveEnabled") private var autoSaveEnabled = false
     
@@ -191,20 +193,7 @@ struct MemoEdit: View {
                             
                             if NewTag != "" {
                                 Button(action: {
-                                    if NewTag != "" {
-                                        if (IndexTag(TagList: database.TagList, name: NewTag) == -1) {
-                                            database.createTag(tag: Tag(name: NewTag, used_at: Date()))
-                                        } else {
-                                            database.TagList[IndexTag(TagList: database.TagList, name: NewTag)].used_at = Date()
-                                            database.updateTag()
-                                        }
-                                        
-                                        if (IndexTag(TagList: memo.tag, name: NewTag) == -1) {
-                                            memo.tag.append(Tag(name: NewTag, used_at: Date()))
-                                            database.updateMemo()
-                                        }
-                                        NewTag = ""
-                                    }
+                                    commitNewTag()
                                 }) {
                                     Image(systemName: "plus.circle.fill")
                                         .foregroundColor(Color.MainColor)
@@ -269,20 +258,7 @@ struct MemoEdit: View {
                         } else {
                             database.updateMemo()
                         }
-                        if NewTag != "" {
-                            if (IndexTag(TagList: database.TagList, name: NewTag) == -1) {
-                                database.createTag(tag: Tag(name: NewTag, used_at: Date()))
-                            } else {
-                                database.TagList[IndexTag(TagList: database.TagList, name: NewTag)].used_at = Date()
-                                database.updateTag()
-                            }
-                            
-                            if (IndexTag(TagList: memo.tag, name: NewTag) == -1) {
-                                memo.tag.append(Tag(name: NewTag, used_at: Date()))
-                                database.updateMemo()
-                            }
-                            NewTag = ""
-                        }
+                        commitNewTag()
                     }) {
                         Text("登録")
                             .foregroundColor(.white)
@@ -311,11 +287,21 @@ struct MemoEdit: View {
             .animation(.easeOut(duration: 0.2), value: keyboard.height)
             .onAppear {
                 keyboard.addObserver()
-                startAutoSaveIfNeeded()
+                if is_Display_MemoEdit {
+                    startAutoSaveIfNeeded()
+                }
             }
             .onChange(of: is_Display_MemoEdit) { newValue in
-                if newValue && is_New {
-                    focusedField = .memo
+                if newValue {
+                    // ポップアップが開いた時点のテキストを基準にする
+                    lastAutoSavedText = memo.text
+                    startAutoSaveIfNeeded()
+                    if is_New {
+                        focusedField = .memo
+                    }
+                } else {
+                    // ポップアップが閉じたら自動保存を停止
+                    stopAutoSave()
                 }
             }
             .onDisappear {
@@ -327,20 +313,46 @@ struct MemoEdit: View {
     
     private func startAutoSaveIfNeeded() {
         guard autoSaveEnabled else { return }
+        // 既存タイマーがあれば二重起動しない
+        stopAutoSave()
         autoSaveTimer = Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { _ in
             guard !memo.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+            // 前回保存時から内容が変わっていなければ無駄な保存を行わない
+            guard memo.text != lastAutoSavedText else { return }
             if is_New {
                 database.createMemo(memo: memo)
                 is_New = false
             } else {
                 database.updateMemo()
             }
+            lastAutoSavedText = memo.text
         }
     }
     
     private func stopAutoSave() {
         autoSaveTimer?.invalidate()
         autoSaveTimer = nil
+    }
+
+    // 入力中の新規タグを TagList と memo.tag に登録する
+    // 同一の Tag インスタンスを両方に渡すことで、別IDの重複タグエンティティが作られるのを防ぐ
+    private func commitNewTag() {
+        guard !NewTag.isEmpty else { return }
+        let tagForMemo: Tag
+        if IndexTag(TagList: database.TagList, name: NewTag) == -1 {
+            tagForMemo = Tag(name: NewTag, used_at: Date())
+            database.createTag(tag: tagForMemo)
+        } else {
+            let idx = IndexTag(TagList: database.TagList, name: NewTag)
+            database.TagList[idx].used_at = Date()
+            database.updateTag()
+            tagForMemo = database.TagList[idx]
+        }
+        if IndexTag(TagList: memo.tag, name: NewTag) == -1 {
+            memo.tag.append(tagForMemo)
+            database.updateMemo()
+        }
+        NewTag = ""
     }
 }
 

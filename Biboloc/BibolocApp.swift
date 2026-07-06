@@ -184,6 +184,19 @@ class Database: ObservableObject {
     // MARK: - Memo CRUD
 
     func createMemo(memo: Memo) {
+        // 重複登録の最後の砦: Core Data に同一IDのエンティティが既にあれば update に振り替える
+        if fetchMemoEntity(id: memo.id) != nil {
+            updateMemoEntity(from: memo)
+            saveContext()
+            if !MemoList.contains(where: { $0.id == memo.id }) {
+                MemoList = (MemoList + [memo]).sorted { $0.created_at > $1.created_at }
+            } else {
+                MemoList = MemoList.sorted { $0.created_at > $1.created_at }
+            }
+            exportToJSON()
+            return
+        }
+
         var tagEntities: [TagEntity] = []
         for tag in memo.tag {
             if let existing = fetchTagEntity(id: tag.id) {
@@ -194,7 +207,8 @@ class Database: ObservableObject {
         }
         insertMemoEntity(from: memo, isInTrash: false, tagEntities: tagEntities)
         saveContext()
-        MemoList = fetchMemos(inTrash: false)
+        // 編集中の参照を壊さないため、再fetchせず in-memory に追加して並べ替え
+        MemoList = (MemoList + [memo]).sorted { $0.created_at > $1.created_at }
         exportToJSON()
     }
 
@@ -203,7 +217,8 @@ class Database: ObservableObject {
             updateMemoEntity(from: memo)
         }
         saveContext()
-        MemoList = fetchMemos(inTrash: false)
+        // 編集中の参照を壊さないため、再fetchせず並べ替えのみ行う
+        MemoList = MemoList.sorted { $0.created_at > $1.created_at }
         exportToJSON()
     }
 
