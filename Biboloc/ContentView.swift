@@ -507,10 +507,10 @@ struct PartlyRoundedCornerView: UIViewRepresentable {
 }
 
 #if canImport(GoogleMobileAds)
-struct AdMobBannerView: UIViewRepresentable {
+private struct AdMobBannerUIView: UIViewRepresentable {
     func makeUIView(context: Context) -> GADBannerView {
         let banner = GADBannerView(adSize: GADAdSizeBanner)
-        
+
         // 本番用
         banner.adUnitID = "ca-app-pub-1615601076718034/4684096521"
         // テスト用
@@ -522,9 +522,15 @@ struct AdMobBannerView: UIViewRepresentable {
         banner.load(GADRequest())
         return banner
     }
-    
-    func updateUIView(_ uiView: GADBannerView, context: Context) {
-        // 特にないのでメソッドだけ用意
+
+    func updateUIView(_ uiView: GADBannerView, context: Context) {}
+}
+
+struct AdMobBannerView: View {
+    var body: some View {
+        if !DebugDeviceConfig.isDebugDevice {
+            AdMobBannerUIView()
+        }
     }
 }
 #else

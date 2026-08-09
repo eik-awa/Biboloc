@@ -30,12 +30,19 @@ class LockManager: ObservableObject {
 @main
 struct BibolocApp: App {
     @StateObject var database = Database()// 画面上部の余白
-    
+
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @StateObject private var lockManager = LockManager()
     @Environment(\.scenePhase) var scenePhase
     @State private var backgroundDate: Date?
-    
+
+    init() {
+        let id = DebugDeviceConfig.persistentDeviceID
+        let isDebug = DebugDeviceConfig.isDebugDevice
+        print("[DebugBadge] Identifier: \(id)")
+        print("[DebugBadge] isDebugDevice: \(isDebug)")
+    }
+
     var body: some Scene {
         WindowGroup {
             ZStack {
@@ -56,7 +63,11 @@ struct BibolocApp: App {
                         }
                         .edgesIgnoringSafeArea(.all)
                 }
-                
+            }
+            .overlay(alignment: .bottomTrailing) {
+                if DebugDeviceConfig.isDebugDevice {
+                    DebugBadgeOverlay()
+                }
             }
             .animation(.easeInOut, value: lockManager.isUnlocked)
             .onChange(of: scenePhase) { newPhase in
@@ -77,6 +88,18 @@ struct BibolocApp: App {
                 }
             }
         }
+    }
+}
+
+private struct DebugBadgeOverlay: View {
+    var body: some View {
+        Rectangle()
+            .fill(Color.cyan)
+            .frame(width: 14, height: 14)
+            .rotationEffect(.degrees(45))
+            .padding(.trailing, 24)
+            .padding(.bottom, 140)
+            .allowsHitTesting(false)
     }
 }
 
